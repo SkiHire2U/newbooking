@@ -1,0 +1,118 @@
+button.right {
+    float: right;
+}
+.menu-contianer {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #9b9b9b;
+}
+.admin-menu ul {
+	margin: 0;
+	padding: 0;
+}
+.admin-menu ul li {
+	list-style: none;
+	display: inline-block;
+	float: left;
+	padding: 0 10px;
+}
+.admin-menu ul li a {
+    text-decoration: none;
+    padding: 0 10px;
+    line-height: 40px;
+    color: #FFF;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: block;
+}
+.admin-menu ul li a:hover {
+	text-decoration: none;
+}
+.admin-menu ul li:hover a {
+	color: #333;
+}
+.webee-table .btn-icon {
+    line-height: 1;
+}
+.admin-button-container {
+    margin: 10px 0 20px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+.admin-button-container .right {
+    float: right;
+}
+.admin-button-container i {
+    padding-right: 5px;
+}
+.webee-table p i {
+    padding-right: 5px;
+}
+.admin-user {
+    margin: 0;
+}
+.admin-user li {
+    list-style: none;
+}
+.admin-user > li > a {
+    text-decoration: none;
+    padding: 0 10px;
+    line-height: 40px;
+    color: #FFF;
+}
+.admin-user > li > a:hover,
+.admin-user > li > a:focus,
+.admin-user > li > a:active {
+    background-color: transparent;
+    color: #333;
+}
+/* BOOKING */
+.booking-data p {
+    margin: 0;
+}
+.booking-dates p {
+    font-size: 18px;
+}
+td.booking-dates {
+    vertical-align: top;
+}
+/* PACKAGES */
+.package-price-table th,
+.package-price-table td {
+    text-align: center;
+}
+.webee-table .ski-image {
+    height: 80px;
+    min-width: 280px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center right;
+    margin: 0;
+    width: 100%;
+}
+.price-input-container .day {
+    padding: 6px;
+    display: block;
+    font-weight: 700;
+}
+.equipment-image {
+    max-width: 500px;
+    width: 100%;
+}
+.equipment-image img {
+    width: 100%;
+    height: auto;
+}
+.total-prices {
+    text-align: right;
+}
+/* PRINTABLE */
+.printable .booking-data p {
+    margin: 0;
+}
+@media print{
+    p {
+        margin: 0;
+    }
+}
