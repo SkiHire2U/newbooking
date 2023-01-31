@@ -8,11 +8,11 @@ class Rental extends Model
 {
     public function booking()
     {
-        return $this->belongsTo('App\Booking');
+        return $this->belongsTo(\App\Booking::class);
     }
 
     public function addons()
     {
-        return $this->belongsToMany('App\Addon', 'rental_addons');
+        return $this->belongsToMany(\App\Addon::class, 'rental_addons');
     }
 }

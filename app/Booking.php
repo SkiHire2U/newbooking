@@ -8,6 +8,6 @@ class Booking extends Model
 {
     public function rentals()
     {
-        return $this->hasMany('App\Rental');
+        return $this->hasMany(\App\Rental::class);
     }
 }

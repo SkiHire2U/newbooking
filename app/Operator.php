@@ -8,6 +8,6 @@ class Operator extends Model
 {
     public function accommodations()
     {
-        return $this->hasMany('App\Accommodation');
+        return $this->hasMany(\App\Accommodation::class);
     }
 }

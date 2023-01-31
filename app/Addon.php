@@ -16,7 +16,7 @@ class Addon extends Model
      */
     public function rentals()
     {
-        return $this->belongsToMany('App\Rental', 'rental_addons');
+        return $this->belongsToMany(\App\Rental::class, 'rental_addons');
     }
 
     public function getAddonPrice($name)
