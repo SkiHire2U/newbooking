@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Mail;
-use App\Http\Requests;
 
 class EmailController extends Controller
 {
-    public function sendMail($data) {
-
-        Mail::queue('emails.' . $data['type'], $data, function($message) use ($data) {
+    public function sendMail($data)
+    {
+        Mail::queue('emails.'.$data['type'], $data, function ($message) use ($data) {
             $message->from('info@skihire2u.com', 'SkiHire2U');
             $message->to($data['email']);
             // $message->to('paul.sepe@webee.com.mt');
@@ -19,9 +17,9 @@ class EmailController extends Controller
         });
     }
 
-    public function sendAdminMail($data) {
-
-        Mail::queue('emails.' . $data['type'], $data, function($message) use ($data) {
+    public function sendAdminMail($data)
+    {
+        Mail::queue('emails.'.$data['type'], $data, function ($message) use ($data) {
             $message->from('info@skihire2u.com', 'SkiHire2U Booking System');
             $message->to('info@skihire2u.com');
             // $message->to('paul.sepe@webee.com.mt');
@@ -31,7 +29,8 @@ class EmailController extends Controller
         });
     }
 
-    public function sendErrorMail($data) {
+    public function sendErrorMail($data)
+    {
         /*
         Mail::queue('emails.exception', ['message' => $data], function($message) {
             $message->from('info@skihire2u.com', 'SkiHire2U');

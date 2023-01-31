@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Accommodation;
+use App\Addon;
 use App\Booking;
-use App\Operator;
+use App\Invoice;
 use App\Package;
 use App\Rental;
-use App\Addon;
-use App\Invoice;
-use Carbon\Carbon;
 
 class InvoiceController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth');
 
         $this->calc = new CalculationController;
@@ -28,53 +25,55 @@ class InvoiceController extends Controller
         $this->accommodationModel = new Accommodation;
     }
 
-    public function saveInvoice($id) {
+    public function saveInvoice($id)
+    {
         $details = $this->calc->getDetails($id);
         $packages = $this->calc->getPackages($id);
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
-        if($packages) {
+        $prices = [];
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
 
         $chalet_discount = 0;
         $discount = 0;
 
-        $rental_prices = array();
-        foreach($packages as $key => $package) {
-        	if($chalet['discount'] != '' or $chalet['discount'] != 0) {
-        		$rental_prices[$package['rental_id']] = array(
-        			'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
-        			'discount' => number_format($prices[$key]['discountAmount'], 2, '.', ','),
-        			'total' => number_format($prices[$key]['discounted'], 2, '.', ','),
-        		);
+        $rental_prices = [];
+        foreach ($packages as $key => $package) {
+            if ($chalet['discount'] != '' or $chalet['discount'] != 0) {
+                $rental_prices[$package['rental_id']] = [
+                    'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
+                    'discount' => number_format($prices[$key]['discountAmount'], 2, '.', ','),
+                    'total' => number_format($prices[$key]['discounted'], 2, '.', ','),
+                ];
                 $chalet_discount = $chalet['discount'];
                 $discount = $prices['total'] - $prices['totalDiscounted'];
-        	} else {
-        		$rental_prices[$package['rental_id']] = array(
-        			'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
-        			'discount' => '0',
-        			'total' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
-        		);
+            } else {
+                $rental_prices[$package['rental_id']] = [
+                    'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
+                    'discount' => '0',
+                    'total' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
+                ];
                 $chalet_discount = 0;
                 $discount = 0;
-        	}
+            }
         }
 
-    	$invoice = new Invoice;
-    	$invoice->chalet_discount = $chalet_discount;
-    	$invoice->rental_prices = json_encode($rental_prices);
-    	$invoice->subtotal = number_format($prices['total'], 2, '.', ',');
-    	$invoice->discount = number_format($discount, 2, '.', ',');
-    	$invoice->total = number_format($prices['total'] - $discount, 2, '.', ',');
-    	$invoice->save();
+        $invoice = new Invoice;
+        $invoice->chalet_discount = $chalet_discount;
+        $invoice->rental_prices = json_encode($rental_prices);
+        $invoice->subtotal = number_format($prices['total'], 2, '.', ',');
+        $invoice->discount = number_format($discount, 2, '.', ',');
+        $invoice->total = number_format($prices['total'] - $discount, 2, '.', ',');
+        $invoice->save();
 
-    	return $invoice->id;
+        return $invoice->id;
     }
 
-    public function updateInvoice($id) {
+    public function updateInvoice($id)
+    {
         $booking = Booking::find($id);
 
         $details = $this->calc->getDetails($id);
@@ -82,35 +81,35 @@ class InvoiceController extends Controller
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
-        if($packages) {
+        $prices = [];
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
 
         $chalet_discount = 0;
         $discount = 0;
 
-        $rental_prices = array();
-        foreach($packages as $key => $package) {
-            if($chalet['discount'] != '' or $chalet['discount'] != 0) {
-                $rental_prices[$package['rental_id']] = array(
+        $rental_prices = [];
+        foreach ($packages as $key => $package) {
+            if ($chalet['discount'] != '' or $chalet['discount'] != 0) {
+                $rental_prices[$package['rental_id']] = [
                     'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
                     'discount' => number_format($prices[$key]['discountAmount'], 2, '.', ','),
                     'total' => number_format($prices[$key]['discounted'], 2, '.', ','),
-                );
+                ];
                 $chalet_discount = $chalet['discount'];
                 $discount = $prices['total'] - $prices['totalDiscounted'];
             } else {
-                $rental_prices[$package['rental_id']] = array(
+                $rental_prices[$package['rental_id']] = [
                     'price' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
                     'discount' => '0',
                     'total' => number_format($prices[$key]['originalAmount'], 2, '.', ','),
-                );
+                ];
                 $chalet_discount = 0;
                 $discount = 0;
             }
         }
-        
+
         $invoice = Invoice::find($booking->invoice_id);
         $invoice->chalet_discount = $chalet_discount;
         $invoice->rental_prices = json_encode($rental_prices);
@@ -120,25 +119,27 @@ class InvoiceController extends Controller
         $invoice->save();
     }
 
-    public function getInvoice($id) {
-    	$invoice = Invoice::find($id);
+    public function getInvoice($id)
+    {
+        $invoice = Invoice::find($id);
 
-    	$invoice->rental_prices = json_decode($invoice->rental_prices, true);
+        $invoice->rental_prices = json_decode($invoice->rental_prices, true);
 
-    	return $invoice;
+        return $invoice;
     }
 
-    public function updateInvoiceAdmin($id, $data) {
+    public function updateInvoiceAdmin($id, $data)
+    {
         $booking = Booking::find($id);
         $packages = $this->calc->getPackages($id);
 
-        $rental_prices = array();
-        foreach($packages as $key => $package) {
-    		$rental_prices[$key] = array(
-    			'price' => number_format($data->rental_price[$key], 2, '.', ','),
-    			'discount' => number_format($data->rental_discount[$key], 2, '.', ','),
-    			'total' => number_format($data->rental_total[$key], 2, '.', ','),
-    		);
+        $rental_prices = [];
+        foreach ($packages as $key => $package) {
+            $rental_prices[$key] = [
+                'price' => number_format($data->rental_price[$key], 2, '.', ','),
+                'discount' => number_format($data->rental_discount[$key], 2, '.', ','),
+                'total' => number_format($data->rental_total[$key], 2, '.', ','),
+            ];
         }
 
         $invoice = Invoice::find($booking->invoice_id);
@@ -149,7 +150,8 @@ class InvoiceController extends Controller
         $invoice->save();
     }
 
-    public function updateInvoiceRental($id, $rental_id) {
+    public function updateInvoiceRental($id, $rental_id)
+    {
         $booking = Booking::find($id);
         $invoice = Invoice::find($booking->invoice_id);
         $rental_prices = json_decode($invoice->rental_prices, true);
@@ -159,28 +161,28 @@ class InvoiceController extends Controller
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
-        if($packages) {
+        $prices = [];
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
 
         $chalet_discount = 0;
         $discount = 0;
 
-        if($chalet['discount'] != '' or $chalet['discount'] != 0) {
-            $rental_prices[$rental_id] = array(
+        if ($chalet['discount'] != '' or $chalet['discount'] != 0) {
+            $rental_prices[$rental_id] = [
                 'price' => number_format($prices[$rental_id]['originalAmount'], 2, '.', ','),
                 'discount' => number_format($prices[$rental_id]['discountAmount'], 2, '.', ','),
                 'total' => number_format($prices[$rental_id]['discounted'], 2, '.', ','),
-            );
+            ];
             $chalet_discount = $chalet['discount'];
             $discount = $prices['total'] - $prices['totalDiscounted'];
         } else {
-            $rental_prices[$rental_id] = array(
+            $rental_prices[$rental_id] = [
                 'price' => number_format($prices[$rental_id]['originalAmount'], 2, '.', ','),
                 'discount' => '0',
                 'total' => number_format($prices[$rental_id]['originalAmount'], 2, '.', ','),
-            );
+            ];
             $chalet_discount = 0;
             $discount = 0;
         }
@@ -202,13 +204,14 @@ class InvoiceController extends Controller
         //$this->updateInvoice($booking->invoice_id, $details, $packages);
     }
 
-    public function removeFromInvoice($id, $rental_id) {
+    public function removeFromInvoice($id, $rental_id)
+    {
         $booking = Booking::find($id);
         $invoice = Invoice::find($booking->invoice_id);
         $rental_prices = json_decode($invoice->rental_prices, true);
 
         foreach ($rental_prices as $key => $prices) {
-            if($key == $rental_id) {
+            if ($key == $rental_id) {
                 unset($rental_prices[$rental_id]);
             }
         }

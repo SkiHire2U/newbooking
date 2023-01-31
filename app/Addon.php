@@ -7,28 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 class Addon extends Model
 {
     /**
-	 * Set timestamps off
-	 */
-	public $timestamps = false;
+     * Set timestamps off
+     */
+    public $timestamps = false;
 
-	/**
-	 * Get rentals with a certain addon
-	 */
-	public function rentals() {
-		return $this->belongsToMany('App\Rental', 'rental_addons');
-	}
+    /**
+     * Get rentals with a certain addon
+     */
+    public function rentals()
+    {
+        return $this->belongsToMany('App\Rental', 'rental_addons');
+    }
 
-	public function getAddonPrice($name) {
-		$array = array_pluck($this->all()->toArray(), 'name');
+    public function getAddonPrice($name)
+    {
+        $array = array_pluck($this->all()->toArray(), 'name');
 
-		foreach ($array as $key => $value) {
+        foreach ($array as $key => $value) {
             if ($value == $name) {
                 $id = $key + 1;
             }
         }
 
         return $this->find($id)->price;
-	}
-
-
+    }
 }

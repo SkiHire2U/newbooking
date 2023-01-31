@@ -8,29 +8,33 @@ class Package extends Model
 {
     //
 
-    public function getPackageName($id) {
+    public function getPackageName($id)
+    {
         return $this->find($id)->name;
     }
 
-    public function getPackageLevel($id) {
+    public function getPackageLevel($id)
+    {
         return $this->find($id)->level;
     }
 
-    public function getPackageType($id) {
+    public function getPackageType($id)
+    {
         return $this->find($id)->type;
     }
 
-    public function getPackagePrice($id, $days, $boots = 'off') {
-    	$package = $this->find($id);
+    public function getPackagePrice($id, $days, $boots = 'off')
+    {
+        $package = $this->find($id);
 
-    	$prices = json_decode($package->prices);
+        $prices = json_decode($package->prices);
 
-    	if($boots == 'on') {
-    		$price = $prices->$days->boots;
-    	} else {
-    		$price = $prices->$days->flat;
-    	}
+        if ($boots == 'on') {
+            $price = $prices->$days->boots;
+        } else {
+            $price = $prices->$days->flat;
+        }
 
-    	return $price;
+        return $price;
     }
 }

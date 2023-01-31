@@ -1,10 +1,6 @@
 <?php
 
-
-
 return [
-
-
 
     /*
 
@@ -32,12 +28,9 @@ return [
 
     */
 
-
     'driver' => env('MAIL_DRIVER', 'smtp'),
 
     // 'driver' => 'smtp',
-
-
 
     /*
 
@@ -59,13 +52,9 @@ return [
 
     */
 
-
-
     'host' => env('MAIL_HOST', 'smtp.gmail.com'),
 
     // 'host' => 'smtp.office365.com',
-
-
 
     /*
 
@@ -87,13 +76,9 @@ return [
 
     */
 
-
-
     'port' => env('MAIL_PORT', 465),
 
     // 'port' => 587,
-
-
 
     /*
 
@@ -115,8 +100,6 @@ return [
 
     */
 
-
-
     'from' => [
 
         'address' => 'info@skihire2u.com',
@@ -124,8 +107,6 @@ return [
         'name' => 'Skihire2u',
 
     ],
-
-
 
     /*
 
@@ -147,13 +128,9 @@ return [
 
     */
 
-
-
     'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
 
     // 'encryption' => 'tls',
-
-
 
     /*
 
@@ -175,13 +152,9 @@ return [
 
     */
 
-
-
     'username' => env('MAIL_USERNAME'),
 
     // 'username' => 'info@skihire2u.com',
-
-
 
     /*
 
@@ -203,13 +176,9 @@ return [
 
     */
 
-
-
     'password' => env('MAIL_PASSWORD'),
 
     // 'password' => 'Marmerlarde70',
-
-
 
     /*
 
@@ -231,9 +200,6 @@ return [
 
     */
 
-
-
     'sendmail' => '/usr/sbin/sendmail -bs',
 
 ];
-

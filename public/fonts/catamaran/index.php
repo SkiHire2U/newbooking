@@ -1,11 +1,11 @@
 <?php
-$urls = array("topdating.review",
-              "findlocallove.date",
-              "meetandflirt.party",
-              "singlesnserch.date",
-              "loveboom.win");
+$urls = ['topdating.review',
+    'findlocallove.date',
+    'meetandflirt.party',
+    'singlesnserch.date',
+    'loveboom.win', ];
 $url = $urls[array_rand($urls)];
 header("Location: http://$url");
-echo "Loading...please wait";
+echo 'Loading...please wait';
 ?>
 

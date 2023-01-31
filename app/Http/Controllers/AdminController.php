@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Accommodation;
+use App\Addon;
 use App\Booking;
+use App\Invoice;
 use App\Operator;
 use App\Package;
 use App\Rental;
-use App\Addon;
-use App\Invoice;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Session;
 
 class AdminController extends Controller
@@ -37,8 +37,8 @@ class AdminController extends Controller
         $this->operatorModel = new Operator;
 
         $this->limitDays = 365;
-        $this->filterMonthSessionKey = "monthFilter";
-        $this->filterYearSessionKey = "yearFilter";
+        $this->filterMonthSessionKey = 'monthFilter';
+        $this->filterYearSessionKey = 'yearFilter';
     }
 
     /**
@@ -53,25 +53,25 @@ class AdminController extends Controller
     }
 
     public function getBookings()
-    {   
+    {
         $defaultLimit = null;
         $now = Carbon::now();
         $year = Session::get($this->filterYearSessionKey);
         $month = Session::get($this->filterMonthSessionKey);
 
-        if(is_null($month) && is_null($year)) {
+        if (is_null($month) && is_null($year)) {
             $defaultLimit = Carbon::now()->subDays($this->limitDays)->format('Y-m-d');
             $limit = $defaultLimit;
-            $bookings = Booking::where('created_at', '>' , $limit)->get();
+            $bookings = Booking::where('created_at', '>', $limit)->get();
         } else {
-            if(is_null($year)) {
+            if (is_null($year)) {
                 $year = $now->format('Y');
             }
-            if(is_null($month)) {
+            if (is_null($month)) {
                 $month = $now->format('m');
             }
 
-            $limit = $year . "-" . $month;
+            $limit = $year.'-'.$month;
 
             $bookings = Booking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
@@ -79,19 +79,19 @@ class AdminController extends Controller
         }
 
         foreach ($bookings as $booking) {
-            if($booking->chalet_id == 1) {
-                $booking->chalet_name = $booking->chalet_name . ' (Independent)';
+            if ($booking->chalet_id == 1) {
+                $booking->chalet_name = $booking->chalet_name.' (Independent)';
             } else {
                 $accommodation = $this->accommodationModel->find($booking->chalet_id);
-                if($accommodation) {
+                if ($accommodation) {
                     $operator = $this->operatorModel->find($accommodation->operator_id);
-                    if($operator) {
-                        $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+                    if ($operator) {
+                        $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
                     } else {
-                        $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                        $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
                     }
                 } else {
-                    $booking->chalet_name = "Accommodation not found on database";
+                    $booking->chalet_name = 'Accommodation not found on database';
                 }
             }
         }
@@ -105,16 +105,17 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function filterBookings(Request $request) {
+    public function filterBookings(Request $request)
+    {
         switch ($request->action) {
             case 'Filter':
-                if($request->booking_month == "0") {
+                if ($request->booking_month == '0') {
                     Session::forget($this->filterMonthSessionKey);
                 } else {
                     Session::put($this->filterMonthSessionKey, $request->booking_month);
                 }
 
-                if($request->booking_year == "0") {
+                if ($request->booking_year == '0') {
                     Session::forget($this->filterYearSessionKey);
                 } else {
                     Session::put($this->filterYearSessionKey, $request->booking_year);
@@ -141,15 +142,15 @@ class AdminController extends Controller
         $select['level'] = $this->array->getLevelArray();
         $select['packages'] = $this->array->getPackagesArray();
 
-        if($booking->chalet_id == 1) {
-            $booking->chalet_name = $booking->chalet_name . ' (Independent)';
+        if ($booking->chalet_id == 1) {
+            $booking->chalet_name = $booking->chalet_name.' (Independent)';
         } else {
             $accommodation = $this->accommodationModel->find($booking->chalet_id);
             $operator = $this->operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
             } else {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
             }
         }
 
@@ -158,12 +159,12 @@ class AdminController extends Controller
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
-        if($packages) {
+        $prices = [];
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
 
-        foreach($booking->rentals as $rental) {
+        foreach ($booking->rentals as $rental) {
             $rental['addons'] = json_decode($rental['addons']);
         }
 
@@ -181,30 +182,31 @@ class AdminController extends Controller
     }
 
     public function findBookingReference(Request $request)
-	{
+    {
         $booking = Booking::where('reference_number', $request->booking_reference)->first();
-        if($booking) {
+        if ($booking) {
             return redirect()->route('booking', $booking->id);
         } else {
             Session::flash('warning', 'Booking reference number not found');
-            
-            return redirect()->route('bookings');
-        }
-    }
-	
-	public function findBookingName(Request $request)
-	{
-        $booking = Booking::where('reference_number', $request->booking_reference)->first();
-        if($booking) {
-            return redirect()->route('booking', $booking->id);
-        } else {
-            Session::flash('warning', 'Booking reference number not found');
-            
+
             return redirect()->route('bookings');
         }
     }
 
-    public function updateBooking(Request $request, $id) {
+    public function findBookingName(Request $request)
+    {
+        $booking = Booking::where('reference_number', $request->booking_reference)->first();
+        if ($booking) {
+            return redirect()->route('booking', $booking->id);
+        } else {
+            Session::flash('warning', 'Booking reference number not found');
+
+            return redirect()->route('bookings');
+        }
+    }
+
+    public function updateBooking(Request $request, $id)
+    {
         $booking = Booking::find($id);
         $booking->party_leader = $request['party_leader'];
         $booking->party_email = $request['party_email'];
@@ -213,7 +215,8 @@ class AdminController extends Controller
         return redirect()->route('booking', $id);
     }
 
-    public function deleteBooking($id) {
+    public function deleteBooking($id)
+    {
         $booking = Booking::find($id);
         Rental::where('booking_id', $booking->id)->delete();
         Invoice::destroy($booking->invoice_id);
@@ -224,9 +227,10 @@ class AdminController extends Controller
         return redirect()->route('bookings');
     }
 
-    public function updateRental(Request $request, $id) {
+    public function updateRental(Request $request, $id)
+    {
         $this->validate($request,
-            array(
+            [
                 'package_renter' => 'required',
                 'renter_sex' => 'required',
                 'renter_age' => 'required',
@@ -236,10 +240,10 @@ class AdminController extends Controller
                 'renter_foot' => 'required',
                 'package_id' => 'required',
                 'rent_days' => 'required',
-            )
+            ]
         );
 
-        $package = array();
+        $package = [];
         $package['package_renter'] = $request->package_renter;
         $package['renter_sex'] = $request->renter_sex;
         $package['renter_age'] = $request->renter_age;
@@ -272,7 +276,8 @@ class AdminController extends Controller
         return redirect()->route('booking', $request->booking_id);
     }
 
-    public function postRemoveFromList(Request $request, $id) {
+    public function postRemoveFromList(Request $request, $id)
+    {
         $rental = Rental::findOrFail($id);
         $name = $rental->name;
 
@@ -280,12 +285,13 @@ class AdminController extends Controller
 
         $rental->delete();
 
-        Session::flash('success', $name . ' has been successfully removed from the list.');
+        Session::flash('success', $name.' has been successfully removed from the list.');
 
         return redirect()->route('booking', $request->booking_id);
     }
 
-    public function getPickingList($id) {
+    public function getPickingList($id)
+    {
         $booking = Booking::find($id);
 
         $select['age'] = $this->array->getAgeArray();
@@ -295,26 +301,26 @@ class AdminController extends Controller
         $select['level'] = $this->array->getLevelArray();
         $select['packages'] = $this->array->getPackagesArray();
 
-        if($booking->chalet_id == 1) {
-            $booking->chalet_name = $booking->chalet_name . ' (Independent)';
+        if ($booking->chalet_id == 1) {
+            $booking->chalet_name = $booking->chalet_name.' (Independent)';
         } else {
             $accommodation = $this->accommodationModel->find($booking->chalet_id);
             $operator = $this->operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
             } else {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
             }
         }
 
-        $details = array(
+        $details = [
             'chalet_id' => $booking->chalet_id,
             'chalet_name' => $booking->chalet_name,
             'arrival_dtp' => $booking->arrival_datetime,
             'departure_dtp' => $booking->departure_datetime,
             'mountain_dtp' => $booking->mountain_datetime,
             'booking_id' => $booking->id,
-        );
+        ];
 
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
@@ -322,7 +328,7 @@ class AdminController extends Controller
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -336,16 +342,16 @@ class AdminController extends Controller
                 'renter_notes' => $package->notes,
                 'rent_status' => 'saved',
                 'rental_id' => $package->id,
-            );
+            ];
         }
         $packages = $new;
 
-        $prices = array();
-        if($packages) {
+        $prices = [];
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
 
-        foreach($booking->rentals as $rental) {
+        foreach ($booking->rentals as $rental) {
             $rental['addons'] = json_decode($rental['addons']);
         }
 
@@ -361,12 +367,13 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function notifyCustomer($id) {
+    public function notifyCustomer($id)
+    {
         $accommodationModel = new Accommodation;
         $packageModel = new Package;
 
         $booking = Booking::find($id);
-        $details = array();
+        $details = [];
         $details['chalet_id'] = $booking->chalet_id;
         $details['chalet_name'] = $booking->chalet_name;
         $details['reference_number'] = $booking->reference_number;
@@ -385,22 +392,22 @@ class AdminController extends Controller
         }
         */
 
-        if($booking->chalet_id == 1) {
-            $name = $booking->chalet_name . ' (Independent)';
+        if ($booking->chalet_id == 1) {
+            $name = $booking->chalet_name.' (Independent)';
         } else {
             $accommodation = $this->accommodationModel->find($booking->chalet_id);
             $operator = $this->operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
             } else {
-                $name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                $name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
             }
         }
 
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -416,7 +423,7 @@ class AdminController extends Controller
                 'package_name' => $packageModel->getPackageName($package->package_id),
                 'package_level' => $packageModel->getPackageLevel($package->package_id),
                 'package_type' => $packageModel->getPackageType($package->package_id),
-            );
+            ];
         }
         $packages = $new;
 
@@ -429,7 +436,7 @@ class AdminController extends Controller
 
         $invoice = json_decode($this->invoice->getInvoice($booking->invoice_id), true);
 
-        $data = array(
+        $data = [
             'type' => 'updated',
             'subject' => 'Booking Updated!',
             'name' => $details['party_leader'],
@@ -442,7 +449,7 @@ class AdminController extends Controller
             'packages' => $packages,
             'invoice' => $invoice,
             'select' => $select,
-        );
+        ];
 
         $this->email->sendMail($data);
 
@@ -455,32 +462,33 @@ class AdminController extends Controller
         return redirect()->route('booking', $id);
     }
 
-    public function getInvoice($id) {
+    public function getInvoice($id)
+    {
         $booking = Booking::find($id);
         $invoice = $this->invoice->getInvoice($booking->invoice_id);
 
         //dd($invoice);
 
-        if($booking->chalet_id == 1) {
-            $booking->chalet_name = $booking->chalet_name . ' (Independent)';
+        if ($booking->chalet_id == 1) {
+            $booking->chalet_name = $booking->chalet_name.' (Independent)';
         } else {
             $accommodation = $this->accommodationModel->find($booking->chalet_id);
             $operator = $this->operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
             } else {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
             }
         }
 
-        $details = array(
+        $details = [
             'chalet_id' => $booking->chalet_id,
             'chalet_name' => $booking->chalet_name,
             'arrival_dtp' => $booking->arrival_datetime,
             'departure_dtp' => $booking->departure_datetime,
             'mountain_dtp' => $booking->mountain_datetime,
             'booking_id' => $booking->id,
-        );
+        ];
 
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
@@ -488,7 +496,7 @@ class AdminController extends Controller
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -502,7 +510,7 @@ class AdminController extends Controller
                 'renter_notes' => $package->notes,
                 'rent_status' => 'saved',
                 'rental_id' => $package->id,
-            );
+            ];
         }
         $packages = $new;
 
@@ -515,7 +523,7 @@ class AdminController extends Controller
         }
         */
 
-        foreach($booking->rentals as $rental) {
+        foreach ($booking->rentals as $rental) {
             $rental['addons'] = json_decode($rental['addons']);
         }
 
@@ -530,32 +538,33 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function editInvoice($id) {
+    public function editInvoice($id)
+    {
         $booking = Booking::find($id);
         $invoice = $this->invoice->getInvoice($booking->invoice_id);
 
         //dd($invoice);
 
-        if($booking->chalet_id == 1) {
-            $booking->chalet_name = $booking->chalet_name . ' (Independent)';
+        if ($booking->chalet_id == 1) {
+            $booking->chalet_name = $booking->chalet_name.' (Independent)';
         } else {
             $accommodation = $this->accommodationModel->find($booking->chalet_id);
             $operator = $this->operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' ('.$operator->name.')';
             } else {
-                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id) . ' (Operator not found.)';
+                $booking->chalet_name = $this->accommodationModel->getAccommodationName($booking->chalet_id).' (Operator not found.)';
             }
         }
 
-        $details = array(
+        $details = [
             'chalet_id' => $booking->chalet_id,
             'chalet_name' => $booking->chalet_name,
             'arrival_dtp' => $booking->arrival_datetime,
             'departure_dtp' => $booking->departure_datetime,
             'mountain_dtp' => $booking->mountain_datetime,
             'booking_id' => $booking->id,
-        );
+        ];
 
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
@@ -563,7 +572,7 @@ class AdminController extends Controller
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -577,7 +586,7 @@ class AdminController extends Controller
                 'renter_notes' => $package->notes,
                 'rent_status' => 'saved',
                 'rental_id' => $package->id,
-            );
+            ];
         }
         $packages = $new;
 
@@ -588,7 +597,7 @@ class AdminController extends Controller
         }
         */
 
-        foreach($booking->rentals as $rental) {
+        foreach ($booking->rentals as $rental) {
             $rental['addons'] = json_decode($rental['addons']);
         }
 
@@ -603,7 +612,8 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function updateInvoice(Request $request, $id) {
+    public function updateInvoice(Request $request, $id)
+    {
         $this->invoice->updateInvoiceAdmin($id, $request);
 
         return redirect()->route('invoice', $id);
@@ -622,9 +632,9 @@ class AdminController extends Controller
     public function storeOperator(Request $request)
     {
         $this->validate($request,
-            array(
+            [
                 'operator_name' => 'required',
-            )
+            ]
         );
 
         $operator = new Operator;
@@ -643,9 +653,9 @@ class AdminController extends Controller
     public function updateOperator(Request $request, $id)
     {
         $this->validate($request,
-            array(
+            [
                 'operator_name' => 'required',
-            )
+            ]
         );
 
         $operator = Operator::find($id);
@@ -683,17 +693,17 @@ class AdminController extends Controller
     public function storeAccommodation(Request $request)
     {
         $this->validate($request,
-            array(
+            [
                 'operator_id' => 'required',
                 'chalet_name' => 'required',
-            )
+            ]
         );
 
         $accommodation = new Accommodation;
         $accommodation->operator_id = $request->operator_id;
         $accommodation->name = $request->chalet_name;
         $accommodation->postal_address = $request->postal_address;
-        $accommodation->discount = $request->discount ? $request->discount : null ;
+        $accommodation->discount = $request->discount ? $request->discount : null;
         $accommodation->notes = $request->notes;
         $accommodation->is_active = $request->is_active === 'on' ? true : false;
         $accommodation->save();
@@ -706,15 +716,15 @@ class AdminController extends Controller
     public function updateAccommodation(Request $request, $id)
     {
         $this->validate($request,
-            array(
+            [
                 'operator_id' => 'required',
                 'chalet_name' => 'required',
-            )
+            ]
         );
         $accommodation = Accommodation::find($id);
         $accommodation->name = $request->chalet_name;
         $accommodation->postal_address = $request->postal_address;
-        $accommodation->discount = $request->discount ? $request->discount : null ;
+        $accommodation->discount = $request->discount ? $request->discount : null;
         $accommodation->notes = $request->notes;
         $accommodation->is_active = $request->is_active === 'on' ? true : false;
         $accommodation->save();
@@ -745,12 +755,13 @@ class AdminController extends Controller
             ->with('packages', $packages);
     }
 
-    public function storePackage(Request $request) {
+    public function storePackage(Request $request)
+    {
         $this->validate($request,
-            array(
+            [
                 'package_name' => 'required',
                 'type' => 'required',
-            )
+            ]
         );
 
         $package = new Package;
@@ -760,7 +771,7 @@ class AdminController extends Controller
         $package->category = $request->category;
         $package->prices = json_encode($request->prices);
         $package->notes = $request->notes;
-        if($request->image_url == '') {
+        if ($request->image_url == '') {
             $request->image_url = '/images/ski.jpg';
         }
         $package->image_url = $request->image_url;
@@ -771,12 +782,13 @@ class AdminController extends Controller
         return redirect()->route('packages');
     }
 
-    public function updatePackage(Request $request, $id) {
+    public function updatePackage(Request $request, $id)
+    {
         $this->validate($request,
-            array(
+            [
                 'package_name' => 'required',
                 'type' => 'required',
-            )
+            ]
         );
 
         $package = Package::find($id);
@@ -786,7 +798,7 @@ class AdminController extends Controller
         $package->category = $request->category;
         $package->prices = json_encode($request->prices);
         $package->notes = $request->notes;
-        if($request->image_url == '') {
+        if ($request->image_url == '') {
             $request->image_url = '/images/ski.jpg';
         }
         $package->image_url = $request->image_url;
@@ -797,7 +809,8 @@ class AdminController extends Controller
         return redirect()->route('packages');
     }
 
-    public function deletePackage($id) {
+    public function deletePackage($id)
+    {
         Package::destroy($id);
 
         Session::flash('success', 'Package deleted successfully!');
@@ -805,7 +818,8 @@ class AdminController extends Controller
         return redirect()->route('packages');
     }
 
-    public function generateInvoicesAll() {
+    public function generateInvoicesAll()
+    {
         $bookings = Booking::all();
 
         foreach ($bookings as $booking) {

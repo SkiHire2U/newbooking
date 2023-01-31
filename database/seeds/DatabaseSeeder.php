@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use App\User;
-use App\Addon;
-use App\Operator;
 use App\Accommodation;
-use App\Package;
+use App\Addon;
 use App\Meta;
+use App\Operator;
+use App\Package;
+use App\User;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -28,44 +28,44 @@ class DatabaseSeeder extends Seeder
     }
 }
 
-class UserTableSeeder extends Seeder {
-
-    public function run(){
-
+class UserTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('users')->delete();
 
-        $user = User::create(array(
-            'name'  => 'Admin',
+        $user = User::create([
+            'name' => 'Admin',
             'email' => 'admin@skihire2u.com',
             'password' => bcrypt('admin@123#'),
-        ));
+        ]);
 
-        $user = User::create(array(
-            'name'  => 'Paul Sepe',
+        $user = User::create([
+            'name' => 'Paul Sepe',
             'email' => 'paul.sepe@webee.com.mt',
             'password' => bcrypt('test1234'),
-        ));
+        ]);
     }
 }
 
-class AddonsTableSeeder extends Seeder {
-
-    public function run() {
-
+class AddonsTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('addons')->delete();
 
         $addons = [
             [
                 'name' => 'boots',
-                'price' => 4
+                'price' => 4,
             ],
             [
                 'name' => 'helmet',
-                'price' => 4
+                'price' => 4,
             ],
             [
                 'name' => 'insurance',
-                'price' => 2
+                'price' => 2,
             ],
         ];
 
@@ -73,9 +73,10 @@ class AddonsTableSeeder extends Seeder {
     }
 }
 
-class OperatorsTableSeeder extends Seeder {
-
-    public function run() {
+class OperatorsTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('operators')->delete();
 
         $operators = [
@@ -130,9 +131,10 @@ class OperatorsTableSeeder extends Seeder {
     }
 }
 
-class AccommodationsTableSeeder extends Seeder {
-
-    public function run() {
+class AccommodationsTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('accommodations')->delete();
 
         $accommodations = [
@@ -478,7 +480,7 @@ class AccommodationsTableSeeder extends Seeder {
                 'operator_id' => 24,
                 'name' => 'Chalet Les Clarines',
                 'discount' => '10',
-                'notes' => 'Petit Chatel'
+                'notes' => 'Petit Chatel',
             ],
             [
                 'operator_id' => 24,
@@ -1040,9 +1042,10 @@ class AccommodationsTableSeeder extends Seeder {
     }
 }
 
-
-class PackagesTableSeeder extends Seeder {
-    public function run() {
+class PackagesTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('packages')->delete();
 
         $packages = [
@@ -1679,8 +1682,10 @@ class PackagesTableSeeder extends Seeder {
     }
 }
 
-class MetasTableSeeder extends Seeder {
-    public function run() {
+class MetasTableSeeder extends Seeder
+{
+    public function run()
+    {
         DB::table('metas')->delete();
 
         $metas = [
@@ -1697,7 +1702,6 @@ class MetasTableSeeder extends Seeder {
                 'value' => json_encode(['1.0', '2.0']),
             ],
         ];
-
 
         foreach ($metas as $meta) {
             Meta::create($meta);

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Package;
 
 class ArrayController extends Controller
 {
-    public function getAgeArray() {
+    public function getAgeArray()
+    {
         $return = [
             '1' => '9 years and below',
             '2' => '10-12 years',
@@ -21,7 +20,8 @@ class ArrayController extends Controller
         return $return;
     }
 
-    public function getHeightArray() {
+    public function getHeightArray()
+    {
         $return = [
             '61' => "61cm / 2'",
             '62' => "62cm / 2'",
@@ -188,8 +188,8 @@ class ArrayController extends Controller
         return $return;
     }
 
-
-    public function getWeightArray() {
+    public function getWeightArray()
+    {
         $return = [
             '10' => '10kg / 1st 8lbs',
             '11' => '11kg / 1st 10lbs',
@@ -201,88 +201,89 @@ class ArrayController extends Controller
             '17' => '17kg / 2st 9lbs',
             '18' => '18kg / 2st 11lbs',
             '19' => '19kg / 2st 13lbs',
-			'20' => '20kg / 3st 2lbs',
-			'21' => '21kg / 3st 4lbs',
-			'22' => '22kg / 3st 6lbs',
-			'23' => '23kg / 3st 8lbs',
-			'24' => '24kg / 3st 10lbs',
-			'25' => '25kg / 3st 13lbs',
-			'26' => '26kg / 4st 1lbs',
-			'27' => '27kg / 4st 3lbs',
-			'28' => '28kg / 4st 5lbs',
-			'29' => '29kg / 4st 7lbs',
-			'30' => '30kg / 4st 10lbs',
-			'31' => '31kg / 4st 12lbs',
-			'32' => '32kg / 5st',
-			'33' => '33kg / 5st 2lbs',
-			'34' => '34kg / 5st 4lbs',
-			'35' => '35kg / 5st 7lbs',
-			'36' => '36kg / 5st 9lbs',
-			'37' => '37kg / 5st 11lbs',
-			'38' => '38kg / 5st 13lbs',
-			'39' => '39kg / 6st 1lbs',
-			'40' => '40kg / 6st 4lbs',
-			'41' => '41kg / 6st 6lbs',
-			'42' => '42kg / 6st 8lbs',
-			'43' => '43kg / 6st 10lbs',
-			'44' => '44kg / 6st 13lbs',
-			'45' => '45kg / 7st 1lbs',
-			'46' => '46kg / 7st 3lbs',
-			'47' => '47kg / 7st 5lbs',
-			'48' => '48kg / 7st 7lbs',
-			'49' => '49kg / 7st 10lbs',
-			'50' => '50kg / 7st 12lbs',
-			'51' => '51kg / 8st',
-			'52' => '52kg / 8st 2lbs',
-			'53' => '53kg / 8st 4lbs',
-			'54' => '54kg / 8st 7lbs',
-			'55' => '55kg / 8st 9lbs',
-			'56' => '56kg / 8st 11lbs',
-			'57' => '57kg / 8st 13lbs',
-			'58' => '58kg / 9st 1lbs',
-			'59' => '59kg / 9st 4lbs',
-			'60' => '60kg / 9st 6lbs',
-			'61' => '61kg / 9st 8lbs',
-			'62' => '62kg / 9st 10lbs',
-			'63' => '63kg / 9st 12lbs',
-			'64' => '64kg / 10st 1lbs',
-			'65' => '65kg / 10st 3lbs',
-			'66' => '66kg / 10st 5lbs',
-			'67' => '67kg / 10st 7lbs',
-			'68' => '68kg / 10st 9lbs',
-			'69' => '69kg / 10st 12lbs',
-			'70' => '70kg / 11st',
-			'71' => '71kg / 11st 2lbs',
-			'72' => '72kg / 11st 4lbs',
-			'73' => '73kg / 11st 6lbs',
-			'74' => '74kg / 11st 9lbs',
-			'75' => '75kg / 11st 11lbs',
-			'76' => '76kg / 11st 13lbs',
-			'77' => '77kg / 12st 1lbs',
-			'78' => '78kg / 12st 3lbs',
-			'79' => '79kg / 12st 6lbs',
-			'80' => '80kg / 12st 8lbs',
-			'81' => '81kg / 12st 10lbs',
-			'82' => '82kg / 12st 12lbs',
-			'83' => '83kg / 13st',
-			'84' => '84kg / 13st 3lbs',
-			'85' => '85kg / 13st 5lbs',
-			'86' => '86kg / 13st 7lbs',
-			'87' => '87kg / 13st 9lbs',
-			'88' => '88kg / 13st 12lbs',
-			'89' => '89kg / 14st',
-			'90' => '90kg / 14st 2lbs',
-			'91' => '91kg / 14st 4lbs',
-			'92' => '92kg / 14st 6lbs',
-			'93' => '93kg / 14st 9lbs',
-			'94' => '94kg / 14st 11lbs',
-			'95' => '95kg / 14st 13lbs or over',
+            '20' => '20kg / 3st 2lbs',
+            '21' => '21kg / 3st 4lbs',
+            '22' => '22kg / 3st 6lbs',
+            '23' => '23kg / 3st 8lbs',
+            '24' => '24kg / 3st 10lbs',
+            '25' => '25kg / 3st 13lbs',
+            '26' => '26kg / 4st 1lbs',
+            '27' => '27kg / 4st 3lbs',
+            '28' => '28kg / 4st 5lbs',
+            '29' => '29kg / 4st 7lbs',
+            '30' => '30kg / 4st 10lbs',
+            '31' => '31kg / 4st 12lbs',
+            '32' => '32kg / 5st',
+            '33' => '33kg / 5st 2lbs',
+            '34' => '34kg / 5st 4lbs',
+            '35' => '35kg / 5st 7lbs',
+            '36' => '36kg / 5st 9lbs',
+            '37' => '37kg / 5st 11lbs',
+            '38' => '38kg / 5st 13lbs',
+            '39' => '39kg / 6st 1lbs',
+            '40' => '40kg / 6st 4lbs',
+            '41' => '41kg / 6st 6lbs',
+            '42' => '42kg / 6st 8lbs',
+            '43' => '43kg / 6st 10lbs',
+            '44' => '44kg / 6st 13lbs',
+            '45' => '45kg / 7st 1lbs',
+            '46' => '46kg / 7st 3lbs',
+            '47' => '47kg / 7st 5lbs',
+            '48' => '48kg / 7st 7lbs',
+            '49' => '49kg / 7st 10lbs',
+            '50' => '50kg / 7st 12lbs',
+            '51' => '51kg / 8st',
+            '52' => '52kg / 8st 2lbs',
+            '53' => '53kg / 8st 4lbs',
+            '54' => '54kg / 8st 7lbs',
+            '55' => '55kg / 8st 9lbs',
+            '56' => '56kg / 8st 11lbs',
+            '57' => '57kg / 8st 13lbs',
+            '58' => '58kg / 9st 1lbs',
+            '59' => '59kg / 9st 4lbs',
+            '60' => '60kg / 9st 6lbs',
+            '61' => '61kg / 9st 8lbs',
+            '62' => '62kg / 9st 10lbs',
+            '63' => '63kg / 9st 12lbs',
+            '64' => '64kg / 10st 1lbs',
+            '65' => '65kg / 10st 3lbs',
+            '66' => '66kg / 10st 5lbs',
+            '67' => '67kg / 10st 7lbs',
+            '68' => '68kg / 10st 9lbs',
+            '69' => '69kg / 10st 12lbs',
+            '70' => '70kg / 11st',
+            '71' => '71kg / 11st 2lbs',
+            '72' => '72kg / 11st 4lbs',
+            '73' => '73kg / 11st 6lbs',
+            '74' => '74kg / 11st 9lbs',
+            '75' => '75kg / 11st 11lbs',
+            '76' => '76kg / 11st 13lbs',
+            '77' => '77kg / 12st 1lbs',
+            '78' => '78kg / 12st 3lbs',
+            '79' => '79kg / 12st 6lbs',
+            '80' => '80kg / 12st 8lbs',
+            '81' => '81kg / 12st 10lbs',
+            '82' => '82kg / 12st 12lbs',
+            '83' => '83kg / 13st',
+            '84' => '84kg / 13st 3lbs',
+            '85' => '85kg / 13st 5lbs',
+            '86' => '86kg / 13st 7lbs',
+            '87' => '87kg / 13st 9lbs',
+            '88' => '88kg / 13st 12lbs',
+            '89' => '89kg / 14st',
+            '90' => '90kg / 14st 2lbs',
+            '91' => '91kg / 14st 4lbs',
+            '92' => '92kg / 14st 6lbs',
+            '93' => '93kg / 14st 9lbs',
+            '94' => '94kg / 14st 11lbs',
+            '95' => '95kg / 14st 13lbs or over',
         ];
 
         return $return;
     }
 
-    public function getFootArray() {
+    public function getFootArray()
+    {
         $return = [
             '1' => 'UK 7 (kids) - EU 25',
             '2' => 'UK 8 (kids) - EU 26',
@@ -293,47 +294,49 @@ class ArrayController extends Controller
             '7' => 'UK 13 (kids) - EU 31',
             '8' => 'UK 13.5 (kids) - EU 32',
             '9' => 'UK 1  - EU 33',
-            '10'=> 'UK 2  - EU 34',
-            '11'=> 'UK 3  - EU 35',
-            '12'=> 'UK 3.5  - EU 35.5',
-            '13'=> 'UK 4  - EU 36.5',
-            '14'=> 'UK 4.5  - EU 37',
-            '15'=> 'UK 5  - EU 38',
-            '16'=> 'UK 5.5  - EU 38.5',
-            '17'=> 'UK 6  - EU 39',
-            '18'=> 'UK 6.5  - EU 40',
-            '19'=> 'UK 7  - EU 40.5',
-            '20'=> 'UK 7.5  - EU 41',
-            '21'=> 'UK 8  - EU 42',
-            '22'=> 'UK 8.5  - EU 42.5',
-            '23'=> 'UK 9  - EU 43',
-            '24'=> 'UK 9.5  - EU 44',
-            '25'=> 'UK 10  - EU 44.5',
-            '26'=> 'UK 10.5  - EU 45',
-            '27'=> 'UK 11  - EU 45.6',
-            '28'=> 'UK 11.5  - EU 46',
-            '29'=> 'UK 12  - EU 47',
-            '30'=> 'UK 12.5  - EU 47.5',
-            '31'=> 'UK 13  - EU 48',
-            '32'=> 'UK 13.5  - EU 48.5',
-            '33'=> 'UK 14  - EU 49',
+            '10' => 'UK 2  - EU 34',
+            '11' => 'UK 3  - EU 35',
+            '12' => 'UK 3.5  - EU 35.5',
+            '13' => 'UK 4  - EU 36.5',
+            '14' => 'UK 4.5  - EU 37',
+            '15' => 'UK 5  - EU 38',
+            '16' => 'UK 5.5  - EU 38.5',
+            '17' => 'UK 6  - EU 39',
+            '18' => 'UK 6.5  - EU 40',
+            '19' => 'UK 7  - EU 40.5',
+            '20' => 'UK 7.5  - EU 41',
+            '21' => 'UK 8  - EU 42',
+            '22' => 'UK 8.5  - EU 42.5',
+            '23' => 'UK 9  - EU 43',
+            '24' => 'UK 9.5  - EU 44',
+            '25' => 'UK 10  - EU 44.5',
+            '26' => 'UK 10.5  - EU 45',
+            '27' => 'UK 11  - EU 45.6',
+            '28' => 'UK 11.5  - EU 46',
+            '29' => 'UK 12  - EU 47',
+            '30' => 'UK 12.5  - EU 47.5',
+            '31' => 'UK 13  - EU 48',
+            '32' => 'UK 13.5  - EU 48.5',
+            '33' => 'UK 14  - EU 49',
         ];
 
         return $return;
     }
 
-    public function getLevelArray() {
+    public function getLevelArray()
+    {
         $return = [
             '1' => 'Beginner',
             '2' => 'Intermediate',
-            '3' => 'Advanced'
+            '3' => 'Advanced',
         ];
 
         return $return;
     }
 
-    public function getSkiLengthArray() {
-    	$return = array(
+    public function getSkiLengthArray()
+    {
+        $return = [
             'child' => [
                 [
                     'min' => 0,
@@ -451,14 +454,15 @@ class ArrayController extends Controller
                     'ski' => [165, 175, 180],
                     'weight' => 0,
                 ],
-            ]
-        );
+            ],
+        ];
 
-		return $return;
+        return $return;
     }
 
-    public function getPoleLengthArray() {
-    	$return = array(
+    public function getPoleLengthArray()
+    {
+        $return = [
             [
                 'min' => 0,
                 'max' => 40,
@@ -524,13 +528,14 @@ class ArrayController extends Controller
                 'max' => 0,
                 'pole' => 140,
             ],
-        );
+        ];
 
-		return $return;
+        return $return;
     }
 
-    public function getSkierCodeArray() {
-    	$return = array(
+    public function getSkierCodeArray()
+    {
+        $return = [
             [
                 'min' => 0,
                 'max' => 13,
@@ -596,21 +601,23 @@ class ArrayController extends Controller
                 'max' => 0,
                 'code' => 'M',
             ],
-        );
-
-		return $return;
-    }
-
-    public function getMondoArray() {
-    	$return = array(
-            15, 16, 17, 17.5, 18.5, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5, 24, 24.5, 25, 25.5, 26, 26.5, 27, 27.5, 28, 28.5, 29, 29.5, 30, 30.5, 31, 31.5, 32, 32.5, 33,
-        );
+        ];
 
         return $return;
     }
 
-    public function getBootArray() {
-    	$return = array(
+    public function getMondoArray()
+    {
+        $return = [
+            15, 16, 17, 17.5, 18.5, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5, 24, 24.5, 25, 25.5, 26, 26.5, 27, 27.5, 28, 28.5, 29, 29.5, 30, 30.5, 31, 31.5, 32, 32.5, 33,
+        ];
+
+        return $return;
+    }
+
+    public function getBootArray()
+    {
+        $return = [
             [
                 'min' => 15,
                 'max' => 16,
@@ -706,13 +713,14 @@ class ArrayController extends Controller
                 'max' => 34,
                 'boot' => 376,
             ],
-        );
+        ];
 
-		return $return;
+        return $return;
     }
 
-    public function getDinArray() {
-    	$return = array(
+    public function getDinArray()
+    {
+        $return = [
             [
                 'min' => 0,
                 'max' => 230,
@@ -753,26 +761,25 @@ class ArrayController extends Controller
                 'max' => 0,
                 'din' => [0.75, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.0, 4.0, 5.0, 6.0, 7.5, 9.0, 10.5],
             ],
-        );
+        ];
 
-		return $return;
+        return $return;
     }
 
-    public function getPackagesArray() {
+    public function getPackagesArray()
+    {
         $packages = Package::all();
 
-        $return = array();
+        $return = [];
 
-        foreach($packages as $package) {
+        foreach ($packages as $package) {
             $name = $package->name;
-            if($package->level != null) {
-                $name = $name . ', ' . $package->level;
+            if ($package->level != null) {
+                $name = $name.', '.$package->level;
             }
             $return[$package->id] = $name;
         }
 
         return $return;
     }
-
-
 }

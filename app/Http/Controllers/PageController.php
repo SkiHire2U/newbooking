@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Accommodation;
 use App\Booking;
+use App\Meta;
 use App\Operator;
 use App\Package;
 use App\Rental;
-use App\Meta;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Session;
 
 class PageController extends Controller
 {
-    
-    public function __construct() {
+    public function __construct()
+    {
         $this->calc = new CalculationController;
         $this->array = new ArrayController;
 
@@ -25,27 +23,30 @@ class PageController extends Controller
         $this->metaModel = new Meta;
     }
 
-    public function getIndex() {
+    public function getIndex()
+    {
         Session::forget('packages');
         Session::forget('reference');
-    	$operators = Operator::all();
+        $operators = Operator::all();
 
-   		return view('pages.index')
+        return view('pages.index')
             ->with('operators', $operators);
-	}
+    }
 
-    public function redirectIndex() {
+    public function redirectIndex()
+    {
         return redirect('/');
     }
 
-    public function postDateDetails(Request $request) {
+    public function postDateDetails(Request $request)
+    {
         $this->validate($request,
-            array(
+            [
                 'chalet_id' => 'required',
                 'arrival_dtp' => 'required',
                 'departure_dtp' => 'required',
-                'mountain_dtp' => 'required'
-            )
+                'mountain_dtp' => 'required',
+            ]
         );
 
         $partyDetails = $request->all();
@@ -58,10 +59,11 @@ class PageController extends Controller
         return redirect()->route('equipments');
     }
 
-    public function getEquipments() {
+    public function getEquipments()
+    {
         $details = session()->get('partyDetails');
 
-        if(!$details) {
+        if (! $details) {
             return redirect()->route('error.expired');
         }
 
@@ -74,14 +76,14 @@ class PageController extends Controller
 
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
+        $prices = [];
         $packages = session()->get('packages');
-        if($packages) {
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         } else {
-            $packages = array();
+            $packages = [];
         }
-        
+
         return view('pages.equipments')
             ->with('details', $details)
             ->with('days', $days)
@@ -93,27 +95,28 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postAddToRack(Request $request) {
+    public function postAddToRack(Request $request)
+    {
         $this->validate($request,
-            array(
+            [
                 'package_renter' => 'required',
                 'package_id' => 'required',
                 'rent_days' => 'required',
-            )
+            ]
         );
         $new = [];
         $package_renter = $request->package_renter;
-        if(Session::has('packages')) {
+        if (Session::has('packages')) {
             $packages = session()->get('packages');
             $i = 1;
             foreach ($packages as $name => $package) {
                 $new[$name] = $package;
-                if($name == $package_renter) {
+                if ($name == $package_renter) {
                     $pos = strpos($package_renter, '[');
-                    if($pos) {
-                        $package_renter = substr($package_renter, 0, $pos-1);
+                    if ($pos) {
+                        $package_renter = substr($package_renter, 0, $pos - 1);
                     }
-                    $package_renter = $package_renter . ' [' . $i . ']';
+                    $package_renter = $package_renter.' ['.$i.']';
                     $i++;
                 }
             }
@@ -132,22 +135,24 @@ class PageController extends Controller
         return redirect()->route('equipments');
     }
 
-    public function postRemoveFromRack(Request $request, $name) {
-        Session::forget('packages.' . $name);
+    public function postRemoveFromRack(Request $request, $name)
+    {
+        Session::forget('packages.'.$name);
 
-        Session::flash('success', $name . ' has been successfully removed from rack.');
+        Session::flash('success', $name.' has been successfully removed from rack.');
 
         return redirect()->route('equipments');
     }
 
-    public function getRentals() {
+    public function getRentals()
+    {
         $session = session()->all();
         $details = session()->get('partyDetails');
 
-        if(!$details) {
+        if (! $details) {
             return redirect()->route('error.expired');
         }
-                
+
         $days = $this->calc->getDays($details);
         $chalet = $this->calc->getChalet($details);
 
@@ -156,18 +161,18 @@ class PageController extends Controller
             $equip->prices = json_decode($equip->prices);
         }
 
-        $prices = array();
+        $prices = [];
         $button = true;
-        $packages = array();
+        $packages = [];
 
-        if(session()->get('packages')) {
+        if (session()->get('packages')) {
             $packages = session()->get('packages');
         }
-        
-        if($packages) {
+
+        if ($packages) {
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
-            foreach($packages as $package) {
-                if($package['rent_status'] != 'saved') {
+            foreach ($packages as $package) {
+                if ($package['rent_status'] != 'saved') {
                     $button = false;
                 }
             }
@@ -197,26 +202,28 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postRemoveFromRental(Request $request, $key) {
-        $package = session()->get('packages.' . $key);
+    public function postRemoveFromRental(Request $request, $key)
+    {
+        $package = session()->get('packages.'.$key);
         $name = $package['package_renter'];
-        
-        if($package['rental_id'] != null) {
+
+        if ($package['rental_id'] != null) {
             $rental = Rental::findOrFail($package['rental_id']);
             $rental->delete();
         }
 
-        Session::forget('packages.' . $key);
+        Session::forget('packages.'.$key);
 
-        Session::flash('success', $name . ' has been successfully removed from rental.');
+        Session::flash('success', $name.' has been successfully removed from rental.');
 
         return redirect()->route('rentals');
     }
 
-    public function getPartyDetails() {
+    public function getPartyDetails()
+    {
         $details = session()->get('partyDetails');
 
-        if(!$details) {
+        if (! $details) {
             return redirect()->route('error.expired');
         }
 
@@ -229,10 +236,10 @@ class PageController extends Controller
 
         $chalet = $this->calc->getChalet($details);
 
-        $prices = array();
-        $packages = array();
-        
-        if(session()->get('packages')) {
+        $prices = [];
+        $packages = [];
+
+        if (session()->get('packages')) {
             $packages = session()->get('packages');
             $prices = $this->calc->getPricing($packages, $chalet['discount']);
         }
@@ -247,9 +254,10 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postSaveRenter(Request $request, $name) {
+    public function postSaveRenter(Request $request, $name)
+    {
         $this->validate($request,
-            array(
+            [
                 'package_renter' => 'required',
                 'renter_age' => 'required',
                 'renter_sex' => 'required',
@@ -259,18 +267,18 @@ class PageController extends Controller
                 'renter_foot' => 'required',
                 'package_id' => 'required',
                 'rent_days' => 'required',
-            )
+            ]
         );
 
         $new = [];
         $add = $request->all();
-        $packages = array();
+        $packages = [];
 
-        if(session()->get('packages')) {
+        if (session()->get('packages')) {
             $packages = session()->get('packages');
 
             foreach ($packages as $key => $package) {
-                if($key == $name){
+                if ($key == $name) {
                     $add['rental_id'] = $package['rental_id'];
                     $new[$key] = $add;
                 } else {
@@ -288,12 +296,13 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postEditRenter(Request $request, $name) {
+    public function postEditRenter(Request $request, $name)
+    {
         $new = [];
         $add = $request->all();
         $packages = session()->get('packages');
         foreach ($packages as $key => $package) {
-            if($key == $name){
+            if ($key == $name) {
                 $package['rent_status'] = 'edit';
                 $new[$key] = $package;
             } else {
@@ -308,12 +317,13 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postReference(Request $request) {
+    public function postReference(Request $request)
+    {
         $this->validate($request,
-            array(
+            [
                 'party_leader' => 'required|email',
                 'reference_code' => 'required',
-            )
+            ]
         );
 
         $bookingModel = new Booking;
@@ -322,8 +332,9 @@ class PageController extends Controller
             ->where('party_email', $request->party_leader)
             ->first();
 
-        if(empty($booking)) {
+        if (empty($booking)) {
             Session::flash('danger', 'Incorrect email address or reference number!');
+
             return redirect('/')->withInput();
         }
 
@@ -339,9 +350,10 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postUpdateDateDetails(Request $request, $id) {
+    public function postUpdateDateDetails(Request $request, $id)
+    {
         $this->validate($request,
-            array(
+            [
                 'chalet_id' => 'required',
                 'arrival_dtp' => 'required',
                 'departure_dtp' => 'required',
@@ -349,12 +361,12 @@ class PageController extends Controller
                 'party_leader' => 'required',
                 'party_email' => 'required',
                 'party_mobile' => 'required',
-            )
+            ]
         );
 
         $details = session()->get('partyDetails');
 
-        $partyDetails = array(
+        $partyDetails = [
             'chalet_id' => $request->chalet_id,
             'chalet_name' => $request->chalet_name,
             'chalet_address' => $request->chalet_address,
@@ -367,14 +379,14 @@ class PageController extends Controller
             'departure_dtp' => $request->departure_dtp,
             'mountain_dtp' => $request->mountain_dtp,
             'booking_id' => $details['booking_id'],
-        );
+        ];
         Session::put('partyDetails', $partyDetails);
 
         $days = $this->calc->getDays($partyDetails);
         $packages = session()->get('packages');
 
         foreach ($packages as &$package) {
-            if( (int) $package['rent_days'] > $days) {
+            if ((int) $package['rent_days'] > $days) {
                 $package['rent_days'] = (string) $days;
             }
         }
@@ -384,5 +396,4 @@ class PageController extends Controller
 
         return redirect()->route('rentals');
     }
-
 }

@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Excel;
-use Session;
-use App\Http\Requests;
-use Carbon\Carbon;
 use App\Accommodation;
 use App\Booking;
 use App\Operator;
-use App\Rental;
 use App\Package;
+use App\Rental;
+use Carbon\Carbon;
+use Excel;
+use Illuminate\Http\Request;
+use Session;
 
 class BookingController extends Controller
 {
@@ -20,8 +19,8 @@ class BookingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function __construct() {
+    public function __construct()
+    {
         $this->calc = new CalculationController;
         $this->array = new ArrayController;
         $this->invoice = new InvoiceController;
@@ -52,17 +51,17 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $this->validate($request,
-            array(
+            [
                 'party_leader' => 'required',
                 'party_email' => 'required',
-                'terms_and_conditions' => 'required'
-            )
+                'terms_and_conditions' => 'required',
+            ]
         );
 
         $details = session()->get('partyDetails');
         $packages = session()->get('packages');
 
-        if(!$details) {
+        if (! $details) {
             return redirect()->route('error.expired');
         }
 
@@ -71,7 +70,7 @@ class BookingController extends Controller
 
         $booking = new Booking;
         $booking->chalet_id = $details['chalet_id'];
-        if($details['chalet_id'] == 1) {
+        if ($details['chalet_id'] == 1) {
             $booking->chalet_name = $details['chalet_name'];
             $booking->chalet_address = $details['chalet_address'];
         }
@@ -92,7 +91,7 @@ class BookingController extends Controller
                 'booking_id' => $booking_id,
                 'package_id' => $package['package_id'],
                 'addons' => json_encode($package['addon']),
-                'duration'=> $package['rent_days'],
+                'duration' => $package['rent_days'],
                 'name' => $package['package_renter'],
                 'age' => $package['renter_age'],
                 'sex' => $package['renter_sex'],
@@ -120,22 +119,22 @@ class BookingController extends Controller
         $operatorModel = new Operator;
         $packageModel = new Package;
 
-        if($details['chalet_id'] == 1) {
-            $name = $details['chalet_name'] . ' (Independent)';
+        if ($details['chalet_id'] == 1) {
+            $name = $details['chalet_name'].' (Independent)';
         } else {
             $accommodation = $accommodationModel->find($details['chalet_id']);
             $operator = $operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' ('.$operator->name.')';
             } else {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (Operator not found.)';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' (Operator not found.)';
             }
         }
 
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -151,7 +150,7 @@ class BookingController extends Controller
                 'package_name' => $packageModel->getPackageName($package->package_id),
                 'package_level' => $packageModel->getPackageLevel($package->package_id),
                 'package_type' => $packageModel->getPackageType($package->package_id),
-            );
+            ];
         }
         $packages = $new;
 
@@ -164,7 +163,7 @@ class BookingController extends Controller
 
         $invoice = json_decode($this->invoice->getInvoice($booking->invoice_id), true);
 
-        $data = array(
+        $data = [
             'type' => 'booked',
             'subject' => 'Thank you for booking with SkiHire2U. This is your booking confirmation.',
             'name' => $request['party_leader'],
@@ -177,7 +176,7 @@ class BookingController extends Controller
             'packages' => $packages,
             'invoice' => $invoice,
             'select' => $select,
-        );
+        ];
 
         $this->email->sendMail($data);
 
@@ -185,7 +184,7 @@ class BookingController extends Controller
 
         $this->email->sendAdminMail($data);
 
-        Session::flash('success', 'You have successfully submitted your booking. We sent you an email containing the reference number of your booking to ' . $request['party_email'] . ' so you can revisit it in the future. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
+        Session::flash('success', 'You have successfully submitted your booking. We sent you an email containing the reference number of your booking to '.$request['party_email'].' so you can revisit it in the future. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
 
         return redirect('/');
         /*
@@ -194,15 +193,18 @@ class BookingController extends Controller
         */
     }
 
-    public function returnDateTimeFormat($date) {
+    public function returnDateTimeFormat($date)
+    {
         return Carbon::parse($date)->toDateTimeString();
     }
 
-    public function returnDateTimeFormatDb($date) {
+    public function returnDateTimeFormatDb($date)
+    {
         return Carbon::createFromFormat('Y-m-d H:i:s', $date)->toDateTimeString();
     }
 
-    public function returnDateTimeFormat2($date) {
+    public function returnDateTimeFormat2($date)
+    {
         return Carbon::createFromFormat('m/d/Y H:i', $date)->toDateTimeString();
     }
 
@@ -240,10 +242,11 @@ class BookingController extends Controller
         //
     }
 
-    public function updateBooking(Request $request, $id) {
+    public function updateBooking(Request $request, $id)
+    {
         $packages = session()->get('packages');
 
-        if(!$packages) {
+        if (! $packages) {
             return redirect()->route('error.expired');
         }
 
@@ -252,7 +255,7 @@ class BookingController extends Controller
                 'booking_id' => $id,
                 'package_id' => $package['package_id'],
                 'addons' => json_encode($package['addon']),
-                'duration'=> $package['rent_days'],
+                'duration' => $package['rent_days'],
                 'name' => $package['package_renter'],
                 'age' => $package['renter_age'],
                 'sex' => $package['renter_sex'],
@@ -268,7 +271,7 @@ class BookingController extends Controller
                 'notes' => $package['renter_notes'],
             ];
             Rental::unguard();
-            Rental::updateOrCreate(array('id' => $package['rental_id']), $rental);
+            Rental::updateOrCreate(['id' => $package['rental_id']], $rental);
         }
 
         $accommodationModel = new Accommodation;
@@ -279,7 +282,7 @@ class BookingController extends Controller
 
         $booking = Booking::find($id);
         $booking->chalet_id = $details['chalet_id'];
-        if($details['chalet_id'] == 1) {
+        if ($details['chalet_id'] == 1) {
             $booking->chalet_name = $details['chalet_name'];
             $booking->chalet_address = $details['chalet_address'];
         }
@@ -292,7 +295,7 @@ class BookingController extends Controller
         $booking->save();
 
         $booking = Booking::find($id);
-        if($booking->invoice_id == null) {
+        if ($booking->invoice_id == null) {
             $invoice_id = $this->invoice->saveInvoice($id);
             $booking->invoice_id = $invoice_id;
             $booking->save();
@@ -300,22 +303,22 @@ class BookingController extends Controller
             $this->invoice->updateInvoice($id);
         }
 
-        if($details['chalet_id'] == 1) {
-            $name = $details['chalet_name'] . ' (Independent)';
+        if ($details['chalet_id'] == 1) {
+            $name = $details['chalet_name'].' (Independent)';
         } else {
             $accommodation = $accommodationModel->find($details['chalet_id']);
             $operator = $operatorModel->find($accommodation->operator_id);
-            if($operator) {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (' . $operator->name . ')';
+            if ($operator) {
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' ('.$operator->name.')';
             } else {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (Operator not found.)';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' (Operator not found.)';
             }
         }
 
         $new = [];
         $packages = $booking->rentals;
         foreach ($packages as $package) {
-            $new[$package->name] = array(
+            $new[$package->name] = [
                 'package_id' => $package->package_id,
                 'addon' => json_decode($package->addons, true),
                 'rent_days' => $package->duration,
@@ -331,7 +334,7 @@ class BookingController extends Controller
                 'package_name' => $packageModel->getPackageName($package->package_id),
                 'package_level' => $packageModel->getPackageLevel($package->package_id),
                 'package_type' => $packageModel->getPackageType($package->package_id),
-            );
+            ];
         }
         $packages = $new;
 
@@ -344,7 +347,7 @@ class BookingController extends Controller
 
         $invoice = json_decode($this->invoice->getInvoice($booking->invoice_id), true);
 
-        $data = array(
+        $data = [
             'type' => 'updated',
             'subject' => 'Booking Updated!',
             'name' => $details['party_leader'],
@@ -357,7 +360,7 @@ class BookingController extends Controller
             'packages' => $packages,
             'invoice' => $invoice,
             'select' => $select,
-        );
+        ];
 
         $this->email->sendMail($data);
 
@@ -365,7 +368,7 @@ class BookingController extends Controller
 
         $this->email->sendAdminMail($data);
 
-        Session::flash('success', 'You have successfully updated your booking.  We sent an email regarding the updates to this booking to ' . $details['party_email'] . '. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
+        Session::flash('success', 'You have successfully updated your booking.  We sent an email regarding the updates to this booking to '.$details['party_email'].'. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
 
         Session::forget('reference');
 
@@ -374,7 +377,8 @@ class BookingController extends Controller
         // return redirect()->route('updated');
     }
 
-    public function updated() {
+    public function updated()
+    {
         return view('booking.updated');
     }
 
@@ -389,13 +393,13 @@ class BookingController extends Controller
         //
     }
 
-    public function runImportAlt() {
-
-        Excel::load('rental.csv', function($reader) {
+    public function runImportAlt()
+    {
+        Excel::load('rental.csv', function ($reader) {
             $results = $reader->all();
-            $packages = array();
+            $packages = [];
             foreach ($results as $row) {
-                $packages[$row->rentalid] = array(
+                $packages[$row->rentalid] = [
                     'package_renter' => $row->fullname,
                     'renter_age' => $row->age,
                     'renter_sex' => $row->sex,
@@ -406,17 +410,17 @@ class BookingController extends Controller
                     'renter_foot' => $row->footsize,
                     'package_id' => $row->rentalpackageid,
                     'rent_days' => $row->noofdays,
-                    'addon' => array(
+                    'addon' => [
                         'boots' => $row->bootsrequired == '1' ? 'on' : 'off',
                         'helmet' => $row->helmetrequired == '1' ? 'on' : 'off',
                         'insurance' => $row->insurancerequired == '1' ? 'on' : 'off',
-                    ),
+                    ],
                     'rent_status' => 'saved',
                     'rental_id' => null,
                     'booking_id' => $row->booking_id,
                     'created_at' => $this->returnDateTimeFormat2($row->create),
                     'updated_at' => $this->returnDateTimeFormat2($row->edit),
-                );
+                ];
             }
 
             foreach ($packages as $package) {
@@ -424,7 +428,7 @@ class BookingController extends Controller
                     'booking_id' => $package['booking_id'],
                     'package_id' => $package['package_id'],
                     'addons' => json_encode($package['addon']),
-                    'duration'=> $package['rent_days'],
+                    'duration' => $package['rent_days'],
                     'name' => $package['package_renter'],
                     'age' => $package['renter_age'],
                     'sex' => $package['renter_sex'],
@@ -446,13 +450,13 @@ class BookingController extends Controller
             }
         });
 
-        Excel::load('booking.csv', function($reader) {
+        Excel::load('booking.csv', function ($reader) {
             $results = $reader->all();
             foreach ($results as $row) {
                 $new = [];
                 $packages = Rental::where('booking_id', $row->id)->get();
                 foreach ($packages as $package) {
-                    $new[$package->id] = array(
+                    $new[$package->id] = [
                         'package_id' => $package->package_id,
                         'addon' => json_decode($package->addons, true),
                         'rent_days' => $package->duration,
@@ -466,15 +470,15 @@ class BookingController extends Controller
                         'renter_notes' => $package->notes,
                         'rent_status' => 'saved',
                         'rental_id' => $package->id,
-                    );
+                    ];
                 }
                 $packages = $new;
 
-                $arrival = $row->arrivaldate . ' ' . $row->arrivaltime;
-                $departure = $row->departuredate . ' ' . $row->departuretime;
-                $mountain = $row->mountaindate . ' 09:00';
+                $arrival = $row->arrivaldate.' '.$row->arrivaltime;
+                $departure = $row->departuredate.' '.$row->departuretime;
+                $mountain = $row->mountaindate.' 09:00';
 
-                $details = array(
+                $details = [
                     'chalet_id' => $row->chalet_id,
                     'chalet_name' => null,
                     'chalet_address' => null,
@@ -487,13 +491,13 @@ class BookingController extends Controller
                     'mountain_dtp' => $this->returnDateTimeFormat2($mountain),
                     'notes' => $row->notes,
                     'booking_id' => $row->id,
-                );
+                ];
 
                 $invoice_id = $this->invoice->saveInvoice($details, $packages);
 
                 $booking = new Booking;
                 $booking->chalet_id = $details['chalet_id'];
-                if($details['chalet_id'] == 1) {
+                if ($details['chalet_id'] == 1) {
                     $booking->chalet_name = $details['chalet_name'];
                     $booking->chalet_address = $details['chalet_address'];
                 }
@@ -509,21 +513,19 @@ class BookingController extends Controller
                 $booking->created_at = $this->returnDateTimeFormat2($row->create);
                 $booking->updated_at = $this->returnDateTimeFormat2($row->edit);
                 $booking->save();
-
             }
         });
 
         dd('success!');
-
     }
 
-    public function runImport() {
-
-        Excel::load('rentals.csv', function($reader) {
+    public function runImport()
+    {
+        Excel::load('rentals.csv', function ($reader) {
             $results = $reader->all();
-            $packages = array();
+            $packages = [];
             foreach ($results as $row) {
-                $packages[$row->name] = array(
+                $packages[$row->name] = [
                     'package_renter' => $row->name,
                     'renter_age' => $row->age,
                     'renter_sex' => $row->sex,
@@ -540,7 +542,7 @@ class BookingController extends Controller
                     'booking_id' => $row->booking_id,
                     'created_at' => $this->returnDateTimeFormat2($row->created_at),
                     'updated_at' => $this->returnDateTimeFormat2($row->updated_at),
-                );
+                ];
             }
 
             foreach ($packages as $package) {
@@ -548,7 +550,7 @@ class BookingController extends Controller
                     'booking_id' => $package['booking_id'],
                     'package_id' => $package['package_id'],
                     'addons' => json_encode($package['addon']),
-                    'duration'=> $package['rent_days'],
+                    'duration' => $package['rent_days'],
                     'name' => $package['package_renter'],
                     'age' => $package['renter_age'],
                     'sex' => $package['renter_sex'],
@@ -570,13 +572,13 @@ class BookingController extends Controller
             }
         });
 
-        Excel::load('bookings.csv', function($reader) {
+        Excel::load('bookings.csv', function ($reader) {
             $results = $reader->all();
             foreach ($results as $row) {
                 $new = [];
                 $packages = Rental::where('booking_id', $row->id)->get();
                 foreach ($packages as $package) {
-                    $new[$package->id] = array(
+                    $new[$package->id] = [
                         'package_id' => $package->package_id,
                         'addon' => json_decode($package->addons, true),
                         'rent_days' => $package->duration,
@@ -590,11 +592,11 @@ class BookingController extends Controller
                         'renter_notes' => $package->notes,
                         'rent_status' => 'saved',
                         'rental_id' => $package->id,
-                    );
+                    ];
                 }
                 $packages = $new;
 
-                $details = array(
+                $details = [
                     'chalet_id' => $row->chalet_id,
                     'chalet_name' => $row->chalet_name,
                     'chalet_address' => $row->chalet_address,
@@ -607,13 +609,13 @@ class BookingController extends Controller
                     'mountain_dtp' => $this->returnDateTimeFormat2($row->mountain_datetime),
                     'notes' => null,
                     'booking_id' => $row->id,
-                );
+                ];
 
                 $invoice_id = $this->invoice->saveInvoice($details, $packages);
 
                 $booking = new Booking;
                 $booking->chalet_id = $details['chalet_id'];
-                if($details['chalet_id'] == 1) {
+                if ($details['chalet_id'] == 1) {
                     $booking->chalet_name = $details['chalet_name'];
                     $booking->chalet_address = $details['chalet_address'];
                 }
@@ -633,6 +635,5 @@ class BookingController extends Controller
         });
 
         dd('success!');
-
     }
 }
