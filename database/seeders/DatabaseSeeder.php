@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Accommodation;
-use App\Addon;
-use App\Meta;
-use App\Operator;
-use App\Package;
-use App\User;
+use App\Models\Accommodation;
+use App\Models\Addon;
+use App\Models\Meta;
+use App\Models\Operator;
+use App\Models\Package;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;

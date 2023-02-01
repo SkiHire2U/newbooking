@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,6 +8,6 @@ class Operator extends Model
 {
     public function accommodations()
     {
-        return $this->hasMany(\App\Accommodation::class);
+        return $this->hasMany(\App\Models\Accommodation::class);
     }
 }
