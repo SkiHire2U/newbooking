@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Hash;
 use App\Accommodation;
 use App\Addon;
 use App\Meta;
@@ -8,6 +7,7 @@ use App\Operator;
 use App\Package;
 use App\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
