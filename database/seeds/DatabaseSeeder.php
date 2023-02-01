@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Hash;
 use App\Accommodation;
 use App\Addon;
 use App\Meta;
@@ -37,13 +38,13 @@ class UserTableSeeder extends Seeder
         $user = User::create([
             'name' => 'Admin',
             'email' => 'admin@skihire2u.com',
-            'password' => bcrypt('admin@123#'),
+            'password' => Hash::make('admin@123#'),
         ]);
 
         $user = User::create([
             'name' => 'Paul Sepe',
             'email' => 'paul.sepe@webee.com.mt',
-            'password' => bcrypt('test1234'),
+            'password' => Hash::make('test1234'),
         ]);
     }
 }
