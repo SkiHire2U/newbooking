@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Accommodation;
-use App\Booking;
-use App\Meta;
-use App\Operator;
-use App\Package;
-use App\Rental;
+use App\Models\Accommodation;
+use App\Models\Booking;
+use App\Models\Meta;
+use App\Models\Operator;
+use App\Models\Package;
+use App\Models\Rental;
 use Illuminate\Http\Request;
 use Session;
 

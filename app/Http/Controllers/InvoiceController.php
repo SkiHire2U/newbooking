@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Accommodation;
-use App\Addon;
-use App\Booking;
-use App\Invoice;
-use App\Package;
-use App\Rental;
+use App\Models\Accommodation;
+use App\Models\Addon;
+use App\Models\Booking;
+use App\Models\Invoice;
+use App\Models\Package;
+use App\Models\Rental;
 
 class InvoiceController extends Controller
 {
