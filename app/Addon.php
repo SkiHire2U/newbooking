@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 
 class Addon extends Model
@@ -21,7 +22,7 @@ class Addon extends Model
 
     public function getAddonPrice($name)
     {
-        $array = array_pluck($this->all()->toArray(), 'name');
+        $array = Arr::pluck($this->all()->toArray(), 'name');
 
         foreach ($array as $key => $value) {
             if ($value == $name) {
