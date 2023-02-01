@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -17,7 +17,7 @@ class Addon extends Model
      */
     public function rentals()
     {
-        return $this->belongsToMany(\App\Rental::class, 'rental_addons');
+        return $this->belongsToMany(\App\Models\Rental::class, 'rental_addons');
     }
 
     public function getAddonPrice($name)

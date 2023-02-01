@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,7 +8,7 @@ class Accommodation extends Model
 {
     public function operator()
     {
-        return $this->belongsTo(\App\Operator::class);
+        return $this->belongsTo(\App\Models\Operator::class);
     }
 
     public function getAccommodationName($id)

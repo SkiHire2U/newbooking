@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Accommodation;
-use App\Booking;
-use App\Meta;
-use App\Package;
+use App\Models\Accommodation;
+use App\Models\Booking;
+use App\Models\Meta;
+use App\Models\Package;
 use Carbon\Carbon;
 
 class CalculationController extends Controller

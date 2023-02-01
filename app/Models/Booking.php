@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,6 +8,6 @@ class Booking extends Model
 {
     public function rentals()
     {
-        return $this->hasMany(\App\Rental::class);
+        return $this->hasMany(\App\Models\Rental::class);
     }
 }
