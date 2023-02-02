@@ -2,10 +2,9 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -76,7 +75,7 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof AuthenticationException) {
             //
         } else {
-            return redirect()->route('error.expired');
+            return redirect()->route('error.error');
         }
 
         return parent::render($request, $exception);
