@@ -1,0 +1,37 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      php: 8.1
+      nodejs: 16
+  pre_build:
+    commands:
+      - echo Build started on `date`
+      - echo Installing Composer Dependencies
+      - composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-progress
+      - echo Installing Node Dependencies
+      - npm install
+  build:
+    commands:
+      - echo Building Assets
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '.ebextensions/**/*'
+    - '.platform/**/*'
+    - 'app/**/*'
+    - 'bootstrap/**/*'
+    - 'config/**/*'
+    - 'database/**/*'
+    - 'lang/**/*'
+    - 'public/**/*'
+    - 'resources/**/*'
+    - 'routes/**/*'
+    - 'storage/**/*'
+    - 'vendor/**/*'
+    - '*'
+  name: "CandidateSuite"

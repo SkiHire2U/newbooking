@@ -65,7 +65,7 @@
 																</tr>
 																<tr>
 																	<th style="text-align:left;vertical-align:middle;padding:12px;font-family:Arial,sans-serif;">
-																		Departure:
+																		:
 																	</th>
 																	<td style="text-align:left;vertical-align:middle;padding:12px;font-family:Arial,sans-serif;">
 																		{{ $departure }}
