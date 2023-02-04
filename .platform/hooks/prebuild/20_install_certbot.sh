@@ -20,5 +20,5 @@ sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --test-cert
 
 #add cron job
 touch /etc/cron.d/certbot_renew
-echo "* * * * * webapp 0 1,13 * * * certbot renew --no-self-upgrade
+echo "* * * * * webapp 0 2 * * * certbot renew --no-self-upgrade
 # empty line" | tee /etc/cron.d/certbot_renew
