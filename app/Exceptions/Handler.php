@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof AuthenticationException) {
             //
         } else {
-            return redirect()->route('error.error');
+            return view('errors.error');
         }
 
         return parent::render($request, $exception);
