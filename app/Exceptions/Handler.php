@@ -45,10 +45,6 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
             return redirect('http://skihire2u.com/not_found');
-        } elseif ($exception instanceof AuthenticationException) {
-            //
-        } else {
-            return view('errors.error');
         }
 
         return parent::render($request, $exception);
