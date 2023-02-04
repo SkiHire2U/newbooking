@@ -14,7 +14,8 @@
         "maatwebsite/excel": "^3.1.8",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.3",
-        "guzzlehttp/guzzle": "^7.2"
+        "guzzlehttp/guzzle": "^7.2",
+        "aws/aws-sdk-php": "^3.258"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
