@@ -3,7 +3,7 @@
 domain="nb-test.skihire2u.com"
 contact="contact@gearboxgo.com"
 
-# this must be done after build so that nginx config doesn't get overwritten by Elastic Beanstalk
+# this must be done in postdeploy so that nginx config doesn't get overwritten by Elastic Beanstalk
 
 #instructions from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt
 
