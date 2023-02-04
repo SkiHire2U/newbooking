@@ -12,7 +12,7 @@ sudo yum-config-manager --enable epel*
 
 #install certbot
 sudo amazon-linux-extras install epel -y
-sudo yum install -y certbot python2-certbot-apache
+sudo yum install -y certbot python2-certbot-nginx
 
 #get certificate
 sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --test-cert
