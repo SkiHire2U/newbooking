@@ -16,8 +16,11 @@ sudo yum-config-manager --enable epel*
 sudo amazon-linux-extras install epel -y
 sudo yum install -y certbot python2-certbot-nginx
 
-#get certificate
-sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+# get certificate
+# test mode
+#sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+
 
 
 #add cron job
