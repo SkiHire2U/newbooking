@@ -34,32 +34,6 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Throwable  $exception
-     * @return void
-     */
-    public function report(Throwable $exception)
-    {
-        if (! ($exception instanceof AuthenticationException) && ! ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException)) {
-            if (ExceptionHandler::isHttpException($exception)) {
-                $content = ExceptionHandler::toIlluminateResponse(ExceptionHandler::renderHttpException($exception), $exception);
-            } else {
-                $content = ExceptionHandler::toIlluminateResponse(ExceptionHandler::convertExceptionToResponse($exception), $exception);
-            }
-
-            $data['content'] = (! isset($content->original)) ? $exception->getMessage() : $content->original;
-
-            Mail::queue('emails.exception', $data, function ($m) {
-                $m->to('paul.sepe@webee.com.mt', 'Server Message')->subject('Error');
-            });
-        }
-
-        parent::report($exception);
-    }
 
     /**
      * Render an exception into an HTTP response.
