@@ -1,4 +1,5 @@
 #!/bin/bash
 
-mv .env.production .env
+# handled in codepipeline
+#mv .env.production .env
 
