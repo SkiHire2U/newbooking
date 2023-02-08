@@ -63,7 +63,7 @@
 									    <label>
 									    	<input name="addon[insurance]" type="hidden" value="off">
 									      	<input name="addon[insurance]" class="insurance-addon" data-id="{{ $equip->id }}" data-increments="{{ $metaModel->getAddonMeta('insurance_increments', $equip->type) }}" type="checkbox">
-									      	Insurance {{ ($equip->category == 'Child Skis' || $equip->category == 'Child Snowboards') ? '(&euro; 1 per day)' : '(&euro; 2 per day)' }}
+									      	Insurance {{ ($equip->category == 'Child Skis' || $equip->category == 'Child Snowboards') ? '(€ 1 per day)' : '(€ 2 per day)' }}
 									    </label>
 									    <a href="#" class="" data-toggle="modal" data-target="#insurance-info-modal"><i class="fa fa-question-circle"></i></a>
 									</div>
