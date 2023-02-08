@@ -8,7 +8,8 @@ contact="contact@gearboxgo.com"
 #check if certbot is already installed
 if command -v certbot &> /dev/null
 then
-    echo "certbot already installed"
+    echo "certbot already installed - reinstalling existing certificate"
+    certbot -n -d ${domain} --nginx --reinstall --redirect
     exit
 fi
 
@@ -28,8 +29,6 @@ sudo yum install -y certbot python2-certbot-nginx
 # test mode
 #sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
 sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-
-
 
 #add cron job
 touch /etc/cron.d/certbot_renew
