@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 use App\Models\Accommodation;
 use App\Models\Addon;
 use App\Models\Booking;
@@ -12,7 +10,9 @@ use App\Models\Operator;
 use App\Models\Package;
 use App\Models\Rental;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Session;
 
 class AdminController extends Controller
