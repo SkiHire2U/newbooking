@@ -93,6 +93,17 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'filemaker' => [
+            'driver' => 'filemaker',
+            'host' => env('FM_HOST', 'fms.skihire2u.com'),
+            'database' => env('FM_DATABASE', 'MyFileName'),
+            'username' => env('FM_USERNAME', 'myusername'),
+            'password' => env('FM_PASSWORD', ''),
+            'prefix' => env('FM_PREFIX', 'web_'),
+            'version' => env('FM_VERSION', 'vLatest'),
+            'protocol' => env('FM_PROTOCOL', 'https'),
+        ]
+
     ],
 
     /*
@@ -125,7 +136,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
