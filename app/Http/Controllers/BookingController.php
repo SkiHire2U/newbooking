@@ -194,7 +194,7 @@ class BookingController extends Controller
         $lastName = $nameExploded[1];
         //Try to find or create client
         try {
-            $fmClient = FMCLient::firstOrNew(['First' => $firstName, 'Last' => $lastName]);
+            $fmClient = FMClient::firstOrNew(['First' => $firstName, 'Last' => $lastName]);
             $fmClient->Email = $request['party_email'];
             $fmClient->Company = $name;
             $fmClient->phone = $request['party_mobile'];
