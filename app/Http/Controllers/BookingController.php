@@ -195,7 +195,7 @@ class BookingController extends Controller
         //Try to find or create client
         try {
             $fmClient = FMClient::where('First', "==", $firstName)->where('Last', "==" , $lastName )->first();
-            if ( is_null($fmClient) ){
+            if ( !$fmClient ){
                 $fmClient = FMClient::new();
             }
             $fmClient->Email = $request['party_email'];
