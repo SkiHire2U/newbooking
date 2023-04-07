@@ -13,6 +13,6 @@ class FMRental extends FMModel
 
     protected $fieldMapping = [
         'Number of People' => 'party_number'
-    ]
+    ];
 
 }
