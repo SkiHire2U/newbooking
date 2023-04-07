@@ -15,4 +15,9 @@ class FMRental extends FMModel
         'Number of People' => 'party_number'
     ];
 
+    protected $casts = [
+        'Date' => 'date',
+        'DateEnd' => 'date',
+    ];
+
 }
