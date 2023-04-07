@@ -8,7 +8,9 @@ use App\Models\Meta;
 use App\Models\Operator;
 use App\Models\Package;
 use App\Models\Rental;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Session;
 
 class PageController extends Controller
@@ -23,7 +25,7 @@ class PageController extends Controller
         $this->metaModel = new Meta;
     }
 
-    public function getIndex()
+    public function getIndex(): View
     {
         Session::forget('packages');
         Session::forget('reference');
@@ -33,12 +35,12 @@ class PageController extends Controller
             ->with('operators', $operators);
     }
 
-    public function redirectIndex()
+    public function redirectIndex(): RedirectResponse
     {
         return redirect('/');
     }
 
-    public function postDateDetails(Request $request)
+    public function postDateDetails(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -95,7 +97,7 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postAddToRack(Request $request)
+    public function postAddToRack(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -135,7 +137,7 @@ class PageController extends Controller
         return redirect()->route('equipments');
     }
 
-    public function postRemoveFromRack(Request $request, $name)
+    public function postRemoveFromRack(Request $request, $name): RedirectResponse
     {
         Session::forget('packages.'.$name);
 
@@ -202,7 +204,7 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postRemoveFromRental(Request $request, $key)
+    public function postRemoveFromRental(Request $request, $key): RedirectResponse
     {
         $package = session()->get('packages.'.$key);
         $name = $package['package_renter'];
@@ -254,7 +256,7 @@ class PageController extends Controller
             ->with('packageModel', $this->packageModel);
     }
 
-    public function postSaveRenter(Request $request, $name)
+    public function postSaveRenter(Request $request, $name): RedirectResponse
     {
         $this->validate($request,
             [
@@ -296,7 +298,7 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postEditRenter(Request $request, $name)
+    public function postEditRenter(Request $request, $name): RedirectResponse
     {
         $new = [];
         $add = $request->all();
@@ -317,7 +319,7 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postReference(Request $request)
+    public function postReference(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -350,7 +352,7 @@ class PageController extends Controller
         return redirect()->route('rentals');
     }
 
-    public function postUpdateDateDetails(Request $request, $id)
+    public function postUpdateDateDetails(Request $request, $id): RedirectResponse
     {
         $this->validate($request,
             [

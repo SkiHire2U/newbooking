@@ -13,9 +13,8 @@ class EmailController extends Controller
             ->from('info@skihire2u.com', 'SkiHire2U')
             ->to($data['email'])
             ->subject($data['subject'])
-            ->view('emails.' . $data['type'], $data));
+            ->view('emails.'.$data['type'], $data));
     }
-
 
     public function sendAdminMail($data)
     {
@@ -23,7 +22,7 @@ class EmailController extends Controller
             ->from('info@skihire2u.com', 'SkiHire2U Booking System')
             ->to('info@skihire2u.com')
             ->subject($data['subject'])
-            ->view('emails.' . $data['type'], $data));
+            ->view('emails.'.$data['type'], $data));
     }
 
     public function sendErrorMail($data)
