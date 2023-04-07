@@ -205,10 +205,10 @@ class BookingController extends Controller
 
             $fmRental = new FMRental();
             $fmRental->id_Customer = $clientId;
-            $fmRental->Date = $details['arrival_dtp'];
-            $fmRental->DateEnd = $details['departure_dtp'];
+            $fmRental->Date = Carbon::createFromFormat ( 'Y-m-d H:i', $details['arrival_dtp']);
+            $fmRental->DateEnd = Carbon::createFromFormat('Y-m-d H:i', $details['departure_dtp']);
             $fmRental->reference_no = $ref;
-            $fmRental->party_number = '';
+            $fmRental->party_number = count($packages);
             $fmRental->save();
         } catch (Exception $e) {
             Log::error($e->getMessage());
