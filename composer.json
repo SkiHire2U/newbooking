@@ -20,7 +20,7 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
-        "phpunit/phpunit": "^9.5.10",
+        "phpunit/phpunit": "^10.0",
         "laravel/browser-kit-testing": "^7.0",
         "nunomaduro/collision": "^7.0",
         "fakerphp/faker": "^1.9.1",
@@ -56,7 +56,10 @@
     },
     "config": {
         "preferred-install": "dist",
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "laravel": {
