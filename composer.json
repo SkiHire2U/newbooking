@@ -16,7 +16,8 @@
         "laravel/ui": "^3.3",
         "guzzlehttp/guzzle": "^7.2",
         "aws/aws-sdk-php": "^3.258",
-        "sentry/sentry-laravel": "^3.2"
+        "sentry/sentry-laravel": "^3.2",
+        "gearbox-solutions/eloquent-filemaker": "^1.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",

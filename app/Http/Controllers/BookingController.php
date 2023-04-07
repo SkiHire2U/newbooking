@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Accommodation;
 use App\Models\Booking;
+use App\Models\FMClient;
+use App\Models\FMRental;
 use App\Models\Operator;
 use App\Models\Package;
 use App\Models\Rental;
 use Carbon\Carbon;
 use Excel;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Session;
 
 class BookingController extends Controller
@@ -45,7 +49,7 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -61,7 +65,7 @@ class BookingController extends Controller
         $details = session()->get('partyDetails');
         $packages = session()->get('packages');
 
-        if (! $details) {
+        if (!$details) {
             return redirect()->route('error.expired');
         }
 
@@ -120,14 +124,14 @@ class BookingController extends Controller
         $packageModel = new Package;
 
         if ($details['chalet_id'] == 1) {
-            $name = $details['chalet_name'].' (Independent)';
+            $name = $details['chalet_name'] . ' (Independent)';
         } else {
             $accommodation = $accommodationModel->find($details['chalet_id']);
             $operator = $operatorModel->find($accommodation->operator_id);
             if ($operator) {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' ('.$operator->name.')';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (' . $operator->name . ')';
             } else {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' (Operator not found.)';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (Operator not found.)';
             }
         }
 
@@ -184,7 +188,37 @@ class BookingController extends Controller
 
         $this->email->sendAdminMail($data);
 
-        Session::flash('success', 'You have successfully submitted your booking. We sent you an email containing the reference number of your booking to '.$request['party_email'].' so you can revisit it in the future. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
+        $name = $request['party_leader'];
+        $nameExploded = explode ( ' ', $name, 2);
+
+        $firstName = $nameExploded[0];
+        $lastName = $nameExploded[1];
+        //Try to find or create client
+        try {
+            $fmClient = FMCLient::firstOrNew(['First' => $firstName, 'Last' => $lastName]);
+            $fmClient->Email = $request['party_email'];
+            $fmClient->Company = $name;
+            $fmClient->phone = $request['party_mobile'];
+            $fmClient->Address = $details['chalet_name'];
+            $fmClient->address2 = $details['chalet_address'];
+            $fmClient->save();
+            $clientId = $fmClient->id;
+
+            $fmRental = new FMRental;
+            $fmRental->id_Customer = $clientId;
+            $fmRental->Date = $details['arrival_dtp'];
+            $fmRental->DateEnd = $details['departure_dtp'];
+            $fmRental->reference_no = $ref;
+            $fmRental->party_number = '';
+            $fmRental->save();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
+        //put rental on client
+
+
+        Session::flash('success', 'You have successfully submitted your booking. We sent you an email containing the reference number of your booking to ' . $request['party_email'] . ' so you can revisit it in the future. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
 
         return redirect('/');
         /*
@@ -211,7 +245,7 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -222,7 +256,7 @@ class BookingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -233,8 +267,8 @@ class BookingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -246,7 +280,7 @@ class BookingController extends Controller
     {
         $packages = session()->get('packages');
 
-        if (! $packages) {
+        if (!$packages) {
             return redirect()->route('error.expired');
         }
 
@@ -304,14 +338,14 @@ class BookingController extends Controller
         }
 
         if ($details['chalet_id'] == 1) {
-            $name = $details['chalet_name'].' (Independent)';
+            $name = $details['chalet_name'] . ' (Independent)';
         } else {
             $accommodation = $accommodationModel->find($details['chalet_id']);
             $operator = $operatorModel->find($accommodation->operator_id);
             if ($operator) {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' ('.$operator->name.')';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (' . $operator->name . ')';
             } else {
-                $name = $accommodationModel->getAccommodationName($details['chalet_id']).' (Operator not found.)';
+                $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (Operator not found.)';
             }
         }
 
@@ -368,7 +402,7 @@ class BookingController extends Controller
 
         $this->email->sendAdminMail($data);
 
-        Session::flash('success', 'You have successfully updated your booking.  We sent an email regarding the updates to this booking to '.$details['party_email'].'. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
+        Session::flash('success', 'You have successfully updated your booking.  We sent an email regarding the updates to this booking to ' . $details['party_email'] . '. Please check your spam folder just in case, if you did not receive an email please contact us at info@skihire2u.com');
 
         Session::forget('reference');
 
@@ -385,7 +419,7 @@ class BookingController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -474,9 +508,9 @@ class BookingController extends Controller
                 }
                 $packages = $new;
 
-                $arrival = $row->arrivaldate.' '.$row->arrivaltime;
-                $departure = $row->departuredate.' '.$row->departuretime;
-                $mountain = $row->mountaindate.' 09:00';
+                $arrival = $row->arrivaldate . ' ' . $row->arrivaltime;
+                $departure = $row->departuredate . ' ' . $row->departuretime;
+                $mountain = $row->mountaindate . ' 09:00';
 
                 $details = [
                     'chalet_id' => $row->chalet_id,
