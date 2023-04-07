@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Models\Accommodation;
 use App\Models\Addon;
 use App\Models\Booking;
@@ -46,13 +48,13 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         //return view('admin.index');
         return redirect()->route('bookings');
     }
 
-    public function getBookings()
+    public function getBookings(): View
     {
         $defaultLimit = null;
         $now = Carbon::now();
@@ -105,7 +107,7 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function filterBookings(Request $request)
+    public function filterBookings(Request $request): RedirectResponse
     {
         switch ($request->action) {
             case 'Filter':
@@ -130,7 +132,7 @@ class AdminController extends Controller
         return redirect()->route('bookings');
     }
 
-    public function showBooking($id)
+    public function showBooking($id): View
     {
         $booking = Booking::find($id);
         $invoice = $this->invoice->getInvoice($booking->invoice_id);
@@ -181,7 +183,7 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function findBookingReference(Request $request)
+    public function findBookingReference(Request $request): RedirectResponse
     {
         $booking = Booking::where('reference_number', $request->booking_reference)->first();
         if ($booking) {
@@ -193,7 +195,7 @@ class AdminController extends Controller
         }
     }
 
-    public function findBookingName(Request $request)
+    public function findBookingName(Request $request): RedirectResponse
     {
         $booking = Booking::where('reference_number', $request->booking_reference)->first();
         if ($booking) {
@@ -205,7 +207,7 @@ class AdminController extends Controller
         }
     }
 
-    public function updateBooking(Request $request, $id)
+    public function updateBooking(Request $request, $id): RedirectResponse
     {
         $booking = Booking::find($id);
         $booking->party_leader = $request['party_leader'];
@@ -215,7 +217,7 @@ class AdminController extends Controller
         return redirect()->route('booking', $id);
     }
 
-    public function deleteBooking($id)
+    public function deleteBooking($id): RedirectResponse
     {
         $booking = Booking::find($id);
         Rental::where('booking_id', $booking->id)->delete();
@@ -227,7 +229,7 @@ class AdminController extends Controller
         return redirect()->route('bookings');
     }
 
-    public function updateRental(Request $request, $id)
+    public function updateRental(Request $request, $id): RedirectResponse
     {
         $this->validate($request,
             [
@@ -276,7 +278,7 @@ class AdminController extends Controller
         return redirect()->route('booking', $request->booking_id);
     }
 
-    public function postRemoveFromList(Request $request, $id)
+    public function postRemoveFromList(Request $request, $id): RedirectResponse
     {
         $rental = Rental::findOrFail($id);
         $name = $rental->name;
@@ -290,7 +292,7 @@ class AdminController extends Controller
         return redirect()->route('booking', $request->booking_id);
     }
 
-    public function getPickingList($id)
+    public function getPickingList($id): View
     {
         $booking = Booking::find($id);
 
@@ -367,7 +369,7 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function notifyCustomer($id)
+    public function notifyCustomer($id): RedirectResponse
     {
         $accommodationModel = new Accommodation;
         $packageModel = new Package;
@@ -462,7 +464,7 @@ class AdminController extends Controller
         return redirect()->route('booking', $id);
     }
 
-    public function getInvoice($id)
+    public function getInvoice($id): View
     {
         $booking = Booking::find($id);
         $invoice = $this->invoice->getInvoice($booking->invoice_id);
@@ -538,7 +540,7 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function editInvoice($id)
+    public function editInvoice($id): View
     {
         $booking = Booking::find($id);
         $invoice = $this->invoice->getInvoice($booking->invoice_id);
@@ -612,14 +614,14 @@ class AdminController extends Controller
             ->with('accommodationModel', $this->accommodationModel);
     }
 
-    public function updateInvoice(Request $request, $id)
+    public function updateInvoice(Request $request, $id): RedirectResponse
     {
         $this->invoice->updateInvoiceAdmin($id, $request);
 
         return redirect()->route('invoice', $id);
     }
 
-    public function getAccommodations()
+    public function getAccommodations(): View
     {
         $operators = Operator::all();
         $accommodations = Accommodation::all();
@@ -629,7 +631,7 @@ class AdminController extends Controller
             ->with('accommodations', $accommodations);
     }
 
-    public function storeOperator(Request $request)
+    public function storeOperator(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -650,7 +652,7 @@ class AdminController extends Controller
         return redirect()->route('accommodations');
     }
 
-    public function updateOperator(Request $request, $id)
+    public function updateOperator(Request $request, $id): RedirectResponse
     {
         $this->validate($request,
             [
@@ -671,7 +673,7 @@ class AdminController extends Controller
         return redirect()->route('accommodations');
     }
 
-    public function deleteOperator($id)
+    public function deleteOperator($id): RedirectResponse
     {
         Operator::destroy($id);
 
@@ -680,7 +682,7 @@ class AdminController extends Controller
         return redirect()->route('accommodations');
     }
 
-    public function showAccommodation($id)
+    public function showAccommodation($id): View
     {
         $operator = Operator::find($id);
         $accommodations = $operator->accommodations;
@@ -690,7 +692,7 @@ class AdminController extends Controller
             ->with('accommodations', $accommodations);
     }
 
-    public function storeAccommodation(Request $request)
+    public function storeAccommodation(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -713,7 +715,7 @@ class AdminController extends Controller
         return redirect()->route('accommodation', $request->operator_id);
     }
 
-    public function updateAccommodation(Request $request, $id)
+    public function updateAccommodation(Request $request, $id): RedirectResponse
     {
         $this->validate($request,
             [
@@ -734,7 +736,7 @@ class AdminController extends Controller
         return redirect()->route('accommodation', $request->operator_id);
     }
 
-    public function deleteAccommodation(Request $request, $id)
+    public function deleteAccommodation(Request $request, $id): RedirectResponse
     {
         Accommodation::destroy($id);
 
@@ -743,7 +745,7 @@ class AdminController extends Controller
         return redirect()->route('accommodation', $request->operator_id);
     }
 
-    public function getPackages()
+    public function getPackages(): View
     {
         $packages = Package::all();
 
@@ -755,7 +757,7 @@ class AdminController extends Controller
             ->with('packages', $packages);
     }
 
-    public function storePackage(Request $request)
+    public function storePackage(Request $request): RedirectResponse
     {
         $this->validate($request,
             [
@@ -782,7 +784,7 @@ class AdminController extends Controller
         return redirect()->route('packages');
     }
 
-    public function updatePackage(Request $request, $id)
+    public function updatePackage(Request $request, $id): RedirectResponse
     {
         $this->validate($request,
             [
@@ -809,7 +811,7 @@ class AdminController extends Controller
         return redirect()->route('packages');
     }
 
-    public function deletePackage($id)
+    public function deletePackage($id): RedirectResponse
     {
         Package::destroy($id);
 

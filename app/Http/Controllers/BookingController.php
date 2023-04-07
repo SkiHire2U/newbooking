@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Models\Accommodation;
 use App\Models\Booking;
 use App\Models\Operator;
@@ -37,7 +39,7 @@ class BookingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
         return view('booking.create');
     }
@@ -213,7 +215,7 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -224,7 +226,7 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
@@ -235,12 +237,12 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         //
     }
 
-    public function updateBooking(Request $request, $id)
+    public function updateBooking(Request $request, $id): RedirectResponse
     {
         $packages = session()->get('packages');
 
@@ -375,7 +377,7 @@ class BookingController extends Controller
         // return redirect()->route('updated');
     }
 
-    public function updated()
+    public function updated(): View
     {
         return view('booking.updated');
     }
@@ -386,7 +388,7 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         //
     }

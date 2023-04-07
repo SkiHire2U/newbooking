@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 
 class ErrorController extends Controller
@@ -11,7 +12,7 @@ class ErrorController extends Controller
         $this->email = new EmailController;
     }
 
-    public function getSessionExpired(Request $request)
+    public function getSessionExpired(Request $request): View
     {
         $data = 'This is an error email from the Skihire2u Booking System';
 
