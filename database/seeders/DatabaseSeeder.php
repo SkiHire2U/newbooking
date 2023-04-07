@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->call(UserTableSeeder::class);
         $this->call(AddonsTableSeeder::class);
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
 
 class UserTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('users')->delete();
 
@@ -54,7 +54,7 @@ class UserTableSeeder extends Seeder
 
 class AddonsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('addons')->delete();
 
@@ -79,7 +79,7 @@ class AddonsTableSeeder extends Seeder
 
 class OperatorsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('operators')->delete();
 
@@ -137,7 +137,7 @@ class OperatorsTableSeeder extends Seeder
 
 class AccommodationsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('accommodations')->delete();
 
@@ -1048,7 +1048,7 @@ class AccommodationsTableSeeder extends Seeder
 
 class PackagesTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('packages')->delete();
 
@@ -1688,7 +1688,7 @@ class PackagesTableSeeder extends Seeder
 
 class MetasTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('metas')->delete();
 

@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
         return redirect()->guest('login');
     }
 
-    public function register()
+    public function register(): void
     {
         $this->reportable(function (Throwable $e) {
             if (app()->bound('sentry')) {
