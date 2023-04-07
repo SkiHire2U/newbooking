@@ -124,13 +124,19 @@ class BookingController extends Controller
 
         if ($details['chalet_id'] == 1) {
             $name = $details['chalet_name'] . ' (Independent)';
+            $chaletName = $details['chalet_name'];
+            $chaletAddress = $details['chalet_address'];
         } else {
             $accommodation = $accommodationModel->find($details['chalet_id']);
             $operator = $operatorModel->find($accommodation->operator_id);
+            $chaletName = $accommodationModel->getAccommodationName($details['chalet_id']);
+
             if ($operator) {
                 $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (' . $operator->name . ')';
+                $chaletAddress = $operator->name;
             } else {
                 $name = $accommodationModel->getAccommodationName($details['chalet_id']) . ' (Operator not found.)';
+                $chaletAddress = 'Operator not found';
             }
         }
 
@@ -187,8 +193,8 @@ class BookingController extends Controller
 
         $this->email->sendAdminMail($data);
 
-        $name = $request['party_leader'];
-        $nameExploded = explode ( ' ', $name, 2);
+        $leader = $request['party_leader'];
+        $nameExploded = explode ( ' ', $leader, 2);
 
         $firstName = $nameExploded[0];
         $lastName = $nameExploded[1] ?? '';
@@ -196,13 +202,15 @@ class BookingController extends Controller
         try {
             $fmClient = FMClient::where('First', "==", $firstName)->where('Last', "==" , $lastName )->first();
             if ( !$fmClient ){
-                $fmClient = FMClient::new();
+                $fmClient = new FMClient();
+                $fmClient->First = $firstName;
+                $fmClient->Last = $lastName;
             }
             $fmClient->Email = $request['party_email'];
-            $fmClient->Company = $name;
+            $fmClient->Company = $leader;
             $fmClient->phone = $request['party_mobile'];
-            $fmClient->Address = $details['chalet_name'];
-            $fmClient->address2 = $details['chalet_address'];
+            $fmClient->Address = $chaletName;
+            $fmClient->address2 = $chaletAddress;
             $fmClient->save();
             $clientId = $fmClient->id;
 
