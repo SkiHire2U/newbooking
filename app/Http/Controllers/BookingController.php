@@ -191,7 +191,7 @@ class BookingController extends Controller
         $nameExploded = explode ( ' ', $name, 2);
 
         $firstName = $nameExploded[0];
-        $lastName = $nameExploded[1];
+        $lastName = $nameExploded[1] ?? '';
         //Try to find or create client
         try {
             $fmClient = FMClient::firstOrNew(['First' => $firstName, 'Last' => $lastName]);
