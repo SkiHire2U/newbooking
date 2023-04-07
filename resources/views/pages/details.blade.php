@@ -30,7 +30,7 @@
                             {{ Form::email('party_email', old('party_email'), array('class' => 'form-control', 'required' => '', 'data-parsley-required' => 'true')) }}
                         </div>
                         <div class="form-group">
-                            {{ Form::label('party_mobile', 'Mobile Number') }}
+                            {{ Form::label('party_mobile', 'Mobile Number ( with country code)') }}
                             {{ Form::text('party_mobile', old('party_mobile'), array('class' => 'form-control', 'required' => '', 'data-parsley-required' => 'true')) }}
                         </div>
                         <div class="form-group">
