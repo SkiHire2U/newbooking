@@ -203,7 +203,7 @@ class BookingController extends Controller
             $fmClient->save();
             $clientId = $fmClient->id;
 
-            $fmRental = new FMRental;
+            $fmRental = new FMRental();
             $fmRental->id_Customer = $clientId;
             $fmRental->Date = $details['arrival_dtp'];
             $fmRental->DateEnd = $details['departure_dtp'];
