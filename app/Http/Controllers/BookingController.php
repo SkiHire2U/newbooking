@@ -218,9 +218,16 @@ class BookingController extends Controller
             $fmRental->id_Customer = $clientId;
             $fmRental->Date = Carbon::createFromFormat ( 'Y-m-d H:i', $details['arrival_dtp']);
             $fmRental->DateEnd = Carbon::createFromFormat('Y-m-d H:i', $details['departure_dtp']);
+            $fmRental->Company = $leader;
             $fmRental->reference_no = $ref;
             $fmRental->party_number = count($packages);
             $fmRental->Notes = $request['party_notes'];
+            $fmRental->PeriodNo = 1;
+            $fmRental->CompanyContactMobile = $request['party_mobile'];
+            $fmRental->Rate = (strtotime($details['departure_dtp'])-strtotime($details['arrival_dtp']) )/ 86400;
+            $fmRental->delivery_address = $chaletName;
+            $fmRental->project_name = $chaletAddress;
+
             $fmRental->save();
         } catch (Exception $e) {
             Log::error($e->getMessage());

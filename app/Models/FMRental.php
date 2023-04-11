@@ -12,7 +12,9 @@ class FMRental extends FMModel
     protected $connection = 'filemaker';
 
     protected $fieldMapping = [
-        'Number of People' => 'party_number'
+        'Number of People' => 'party_number',
+        'Delivery Address' => 'delivery_address',
+        'Project Name' => 'project_name',
     ];
 
     protected $casts = [
