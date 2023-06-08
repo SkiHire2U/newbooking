@@ -1,27 +1,37 @@
-# Laravel PHP Framework
+# SkiHire2U New Booking Portal
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+## Frameworks, Packages, and Tools
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+This solutions is built on the Laravel framework.
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+* [PHP 8.1](https://www.php.net/)
+* [Node 18](https://nodejs.org/en/)
+* [Laravel](https://laravel.com/) - PHP Framework
 
-## Official Documentation
+## Services used in production
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
+* AWS Elastic Beanstalk
+* AWS CodePipeline
+* AWS CodeBuild
+* AWS SES
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+## Local Development
+* Check out project from GitHub to local development environment
+* Copy `.env.example` to `.env` and fill in the missing entries (`APP_KEY` in next step)
+* Generate an `APP_KEY` entry using `php artisan key:generate`
+* Install PHP packages with `composer install`
+* Install JavaScript dependencies with `npm install`
+* Compile JavaScript with `npm run dev` or `npm run dev`
+* Set up a web host with `public` folder as root
+* Open your host in your local server and enjoy!
 
-## Security Vulnerabilities
+## Deployment to Production
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+This app is built and deployed to production automatically using a CI/CD pipeline when changes are committed to the `main` branch.
 
-## License
+When changes are committed on the `main` branch, GitHub fires a webhook to Amazon CodePipeline. This webhook starts a pipeline which gets the code from GitHub, runs a build process through CodeBuild, and then deploys to the production environment on Elastic Beanstalk.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+The build process in CodeBuild is configured using `buildspec.yml`.
+
+The Elastic Beanstalk environment, including Nginx server configuration is controlled through the `.platform` directory
