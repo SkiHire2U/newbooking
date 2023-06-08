@@ -23,6 +23,8 @@ This solutions is built on the Laravel framework.
 * Install PHP packages with `composer install`
 * Install JavaScript dependencies with `npm install`
 * Compile JavaScript with `npm run dev` or `npm run dev`
+* Create a database and fill in the database credentials in `.env`
+* Run database migrations with `php artisan migrate`
 * Set up a web host with `public` folder as root
 * Open your host in your local server and enjoy!
 
