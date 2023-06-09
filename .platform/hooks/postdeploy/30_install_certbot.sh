@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ---- Configuration ----
-domain="nb-test.skihire2u.com"
+domain="newbooking.skihire2u.com"
 contact="contact@gearboxgo.com"
-test_mode=true
+test_mode=false
 # -----------------------
 
 # Temporary immediate exit so that we don't run this until dns is set up
