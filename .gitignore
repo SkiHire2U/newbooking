@@ -17,3 +17,4 @@ yarn-error.log
 /.vscode
 /.well-known
 composer.phar
+**/*.DS_Store
