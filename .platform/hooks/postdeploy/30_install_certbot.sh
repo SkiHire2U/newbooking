@@ -1,10 +1,15 @@
 #!/bin/bash
 
 # ---- Configuration ----
-domain="newbooking.skihire2u.com"
+domain="aggregate.thomannasphalt.com"
 contact="contact@gearboxgo.com"
+bucket="ssl-certificates-thomann"
+folder=$(aws s3 ls s3://ssl-certificates-thomann/LetsEncrypt/aggregate.thomannasphalt.com)
 test_mode=false
 # -----------------------
+
+# aws s3 sync /etc/letsencrypt/live/aggregate.thomannasphalt.com s3://ssl-certificates-thomann/LetsEncrypt/aggregate.thomannasphalt.com // upload to S3
+# aws s3 sync s3://ssl-certificates-thomann/LetsEncrypt/aggregate.thomannasphalt.com /etc/letsencrypt/live/aggregate.thomannasphalt.com // download from S3
 
 # Temporary immediate exit so that we don't run this until dns is set up
 #exit
@@ -14,6 +19,25 @@ test_mode=false
 #check if certbot is already installed
 if command -v certbot &>/dev/null; then
     echo "certbot already installed"
+
+    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    if [ -z "$folder" ]; then
+        echo "Folder does not exist."
+        # [GENERATE AND UPLOAD CERT SINCE IT DOESN'T EXIST]
+        if [ "$test_mode" = true ]; then
+            #get a test mode cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+            aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+        else
+            #get a production cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+            aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+        fi
+    else
+        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        echo "Folder exists."
+        aws s3 sync s3://${bucket}/LetsEncrypt/${domain} /etc/letsencrypt/live/${domain}
+    fi
 
     # check if the certificate is staging or production
     # look for the word "STAGING" in the certificate info
@@ -33,14 +57,12 @@ if command -v certbot &>/dev/null; then
         echo "Forcing SSL certificate renewal..."
 
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
+        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
         exit
     else
-        #just reinstall
-        echo "Reinstalling existing SSL certificate from certbot"
-        certbot -n -d ${domain} --nginx --reinstall --redirect --agree-tos --email ${contact}
-        exit
+        # Certificate is installed successfully 
+        echo "Production certificate is installed"
     fi
-
 fi
 
 # Install certbot since it's not installed already
@@ -56,13 +78,23 @@ sudo yum-config-manager --enable epel*
 sudo amazon-linux-extras install epel -y
 sudo yum install -y certbot python2-certbot-nginx
 
-# get certificate
-if [ "$test_mode" = true ]; then
-    #get a test mode cert
-    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+# [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+if [ -z "$folder" ]; then
+    echo "Folder does not exist."
+    # [GENERATE CERT IF IT DOESN'T EXIST]
+    if [ "$test_mode" = true ]; then
+        #get a test mode cert
+        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+    else
+        #get a production cert
+        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+    fi
 else
-    #get a production cert
-    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+    echo "Folder exists."
+    # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+    aws s3 sync s3://${bucket}/LetsEncrypt/${domain} /etc/letsencrypt/live/${domain}
 fi
 
 #add cron job
