@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # ---- Configuration ----
-domain="aggregate.thomannasphalt.com"
+domain="newbooking.skihire2u.com"
 contact="contact@gearboxgo.com"
-bucket="ssl-certificates-thomann"
-folder=$(aws s3 ls s3://ssl-certificates-thomann/LetsEncrypt/aggregate.thomannasphalt.com)
+bucket="ssl-certificates-skihire2u"
+folder=$(aws s3 ls s3://ssl-certificates-skihire2u/LetsEncrypt/newbooking.skihire2u.com)
 test_mode=false
 # -----------------------
 
@@ -27,11 +27,11 @@ if command -v certbot &>/dev/null; then
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+            aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
         else
             #get a production cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+            aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
         fi
     else
         # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
@@ -57,7 +57,7 @@ if command -v certbot &>/dev/null; then
         echo "Forcing SSL certificate renewal..."
 
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
-        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+        aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
         exit
     else
         # Certificate is installed successfully 
@@ -85,11 +85,11 @@ if [ -z "$folder" ]; then
     if [ "$test_mode" = true ]; then
         #get a test mode cert
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+        aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
     else
         #get a production cert
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-        aws s3 sync /etc/letsencrypt/live/${domain}} s3://${bucket}/LetsEncrypt/${domain}
+        aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
     fi
 else
     echo "Folder exists."
