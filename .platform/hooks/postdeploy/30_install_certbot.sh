@@ -62,39 +62,41 @@ if command -v certbot &>/dev/null; then
     else
         # Certificate is installed successfully 
         echo "Production certificate is installed"
-    fi
-fi
-
-# Install certbot since it's not installed already
-# Instructions from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt
-
-#install prerequisites
-cd /tmp
-sudo wget -r --no-parent -A 'epel-release-*.rpm' https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
-sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
-sudo yum-config-manager --enable epel*
-
-#install certbot
-sudo amazon-linux-extras install epel -y
-sudo yum install -y certbot python2-certbot-nginx
-
-# [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
-if [ -z "$folder" ]; then
-    echo "Folder does not exist."
-    # [GENERATE CERT IF IT DOESN'T EXIST]
-    if [ "$test_mode" = true ]; then
-        #get a test mode cert
-        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-        aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
-    else
-        #get a production cert
-        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-        aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
+        exit
     fi
 else
-    echo "Folder exists."
-    # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
-    aws s3 sync s3://${bucket}/LetsEncrypt/${domain} /etc/letsencrypt/live/${domain}
+
+    # Install certbot since it's not installed already
+    # Instructions from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt
+
+    #install prerequisites
+    cd /tmp
+    sudo wget -r --no-parent -A 'epel-release-*.rpm' https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
+    sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
+    sudo yum-config-manager --enable epel*
+
+    #install certbot
+    sudo amazon-linux-extras install epel -y
+    sudo yum install -y certbot python2-certbot-nginx
+
+    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    if [ -z "$folder" ]; then
+        echo "Folder does not exist."
+        # [GENERATE CERT IF IT DOESN'T EXIST]
+        if [ "$test_mode" = true ]; then
+            #get a test mode cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+            aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
+        else
+            #get a production cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+            aws s3 sync /etc/letsencrypt/live/${domain} s3://${bucket}/LetsEncrypt/${domain}
+        fi
+    else
+        echo "Folder exists."
+        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        aws s3 sync s3://${bucket}/LetsEncrypt/${domain} /etc/letsencrypt/live/${domain}
+    fi
 fi
 
 #add cron job
