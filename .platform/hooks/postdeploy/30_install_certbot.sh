@@ -24,16 +24,21 @@ if command -v certbot &>/dev/null; then
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            aws s3 sync /etc/letsencrypt/ s3://${bucket}/LetsEncrypt/
+            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         else
             #get a production cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            aws s3 sync /etc/letsencrypt/ s3://${bucket}/LetsEncrypt/
+            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         fi
     else
         # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
         echo "$folder exists."
-        aws s3 sync s3://${bucket}/LetsEncrypt/ /etc/letsencrypt/
+        aws s3 sync s3://${bucket}/LetsEncrypt/backup.tar.gz /
+        sudo rm -rf /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf -f
+        tar -xzvf backup.tar.gz
+        sudo mv /archive/ /live/ /renewal/ options-ssl-nginx.conf -f
         systemctl restart nginx
     fi
 
@@ -55,7 +60,8 @@ if command -v certbot &>/dev/null; then
         echo "Forcing SSL certificate renewal..."
 
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
-        aws s3 sync /etc/letsencrypt/ s3://${bucket}/LetsEncrypt/
+        tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
     else
         # Certificate is installed successfully 
         echo "Certificate is installed"
@@ -82,16 +88,21 @@ else
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            aws s3 sync /etc/letsencrypt/ s3://${bucket}/LetsEncrypt/
+            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         else
             #get a production cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            aws s3 sync /etc/letsencrypt/ s3://${bucket}/LetsEncrypt/
+            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         fi
     else
         echo "$folder exists."
         # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
-        aws s3 sync s3://${bucket}/LetsEncrypt/ /etc/letsencrypt/
+        aws s3 sync s3://${bucket}/LetsEncrypt/backup.tar.gz /
+        sudo rm -rf /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf -f
+        tar -xzvf backup.tar.gz
+        sudo mv /archive/ /live/ /renewal/ options-ssl-nginx.conf -f
         systemctl restart nginx
     fi
 fi
