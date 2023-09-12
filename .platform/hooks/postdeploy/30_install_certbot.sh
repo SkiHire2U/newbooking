@@ -3,6 +3,8 @@
 # ---- Configuration ----
 domain="newbooking.skihire2u.com"
 contact="contact@gearboxgo.com"
+bucket="ssl-certificates-skihire2u"
+folder=$(aws s3 ls s3://ssl-certificates-skihire2u/LetsEncrypt/)
 test_mode=false
 # -----------------------
 
@@ -14,6 +16,31 @@ test_mode=false
 #check if certbot is already installed
 if command -v certbot &>/dev/null; then
     echo "certbot already installed"
+
+    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    if [ -z "$folder" ]; then
+        echo "$folder does not exist."
+        # [GENERATE AND UPLOAD CERT SINCE IT DOESN'T EXIST]
+        if [ "$test_mode" = true ]; then
+            #get a test mode cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
+        else
+            #get a production cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
+        fi
+    else
+        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        echo "$folder exists."
+        sudo rm -rf /etc/letsencrypt/*
+        sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
+        sudo tar -xzvf /backup.tar.gz --directory /
+        sudo certbot -d ${domain} --reinstall --redirect
+        systemctl restart nginx
+    fi
 
     # check if the certificate is staging or production
     # look for the word "STAGING" in the certificate info
@@ -33,36 +60,51 @@ if command -v certbot &>/dev/null; then
         echo "Forcing SSL certificate renewal..."
 
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
-        exit
+        tar -czvf backup.tar.gz /etc/letsencrypt/*
+        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
     else
-        #just reinstall
-        echo "Reinstalling existing SSL certificate from certbot"
-        certbot -n -d ${domain} --nginx --reinstall --redirect --agree-tos --email ${contact}
-        exit
+        # Certificate is installed successfully 
+        echo "Certificate is installed"
     fi
-
-fi
-
-# Install certbot since it's not installed already
-# Instructions from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt
-
-#install prerequisites
-cd /tmp
-sudo wget -r --no-parent -A 'epel-release-*.rpm' https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
-sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
-sudo yum-config-manager --enable epel*
-
-#install certbot
-sudo amazon-linux-extras install epel -y
-sudo yum install -y certbot python2-certbot-nginx
-
-# get certificate
-if [ "$test_mode" = true ]; then
-    #get a test mode cert
-    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
 else
-    #get a production cert
-    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+
+    # Install certbot since it's not installed already
+    # Instructions from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt
+
+    #install prerequisites
+    cd /tmp
+    sudo wget -r --no-parent -A 'epel-release-*.rpm' https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
+    sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
+    sudo yum-config-manager --enable epel*
+
+    #install certbot
+    sudo amazon-linux-extras install epel -y
+    sudo yum install -y certbot python2-certbot-nginx
+
+    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    if [ -z "$folder" ]; then
+        echo "$folder does not exist."
+        # [GENERATE CERT IF IT DOESN'T EXIST]
+        if [ "$test_mode" = true ]; then
+            #get a test mode cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
+        else
+            #get a production cert
+            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
+            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
+        fi
+    else
+        echo "$folder exists."
+        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        sudo rm -rf /etc/letsencrypt/*
+        sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
+        sudo tar -xzvf /backup.tar.gz --directory /
+        sudo certbot -d ${domain} --reinstall --redirect
+        systemctl restart nginx
+    fi
 fi
 
 #add cron job
