@@ -24,21 +24,21 @@ if command -v certbot &>/dev/null; then
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
             aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         else
             #get a production cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
             aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         fi
     else
         # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
         echo "$folder exists."
-        aws s3 sync s3://${bucket}/LetsEncrypt/backup.tar.gz /
-        sudo rm -rf /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf -f
-        tar -xzvf backup.tar.gz
-        sudo mv /archive/ /live/ /renewal/ options-ssl-nginx.conf -f
+        sudo rm -rf /etc/letsencrypt/*
+        sudo aws s3 cp s3://ssl-certificates-skihire2u/LetsEncrypt/backup.tar.gz /
+        sudo tar -xzvf /backup.tar.gz --directory /
+        sudo certbot -d newbooking.skihire2u.com --reinstall --redirect
         systemctl restart nginx
     fi
 
@@ -60,7 +60,7 @@ if command -v certbot &>/dev/null; then
         echo "Forcing SSL certificate renewal..."
 
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
-        tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+        tar -czvf backup.tar.gz /etc/letsencrypt/*
         aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
     else
         # Certificate is installed successfully 
@@ -88,21 +88,21 @@ else
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
             aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         else
             #get a production cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            tar -czvf backup.tar.gz /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf
+            tar -czvf backup.tar.gz /etc/letsencrypt/*
             aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         fi
     else
         echo "$folder exists."
         # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
-        aws s3 sync s3://${bucket}/LetsEncrypt/backup.tar.gz /
-        sudo rm -rf /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/letsencrypt/renewal/ options-ssl-nginx.conf -f
-        tar -xzvf backup.tar.gz
-        sudo mv /archive/ /live/ /renewal/ options-ssl-nginx.conf -f
+        sudo rm -rf /etc/letsencrypt/*
+        sudo aws s3 cp s3://ssl-certificates-skihire2u/LetsEncrypt/backup.tar.gz /
+        sudo tar -xzvf /backup.tar.gz --directory /
+        sudo certbot -d newbooking.skihire2u.com --reinstall --redirect
         systemctl restart nginx
     fi
 fi
