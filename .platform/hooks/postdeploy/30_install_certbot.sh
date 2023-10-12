@@ -17,10 +17,10 @@ test_mode=false
 if command -v certbot &>/dev/null; then
     echo "certbot already installed"
 
-    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    # check if the S3 bucket already exists with a certificate
     if [ -z "$folder" ]; then
         echo "$folder does not exist."
-        # [GENERATE AND UPLOAD CERT SINCE IT DOESN'T EXIST]
+        # obtain, install, and upload certificate to S3 bucket since it does not exist already
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
@@ -33,13 +33,16 @@ if command -v certbot &>/dev/null; then
             aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
         fi
     else
-        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        # download and install certificate from existing S3 bucket
         echo "$folder exists."
         sudo rm -rf /etc/letsencrypt/*
         sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
         sudo tar -xzvf /backup.tar.gz --directory /
         sudo certbot -d ${domain} --reinstall --redirect
         systemctl restart nginx
+        # re-uploading the certificate in case of renewal during certbot installation
+        tar -czvf backup.tar.gz /etc/letsencrypt/*
+        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
     fi
 
     # check if the certificate is staging or production
@@ -81,10 +84,10 @@ else
     sudo amazon-linux-extras install epel -y
     sudo yum install -y certbot python2-certbot-nginx
 
-    # [CHECK IF BUCKET FOLDER EXISTS W/ CERT]
+    # check if the S3 bucket already exists with a certificate
     if [ -z "$folder" ]; then
         echo "$folder does not exist."
-        # [GENERATE CERT IF IT DOESN'T EXIST]
+        # obtain, install, and upload certificate to S3 bucket since it does not exist already
         if [ "$test_mode" = true ]; then
             #get a test mode cert
             sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
@@ -98,12 +101,15 @@ else
         fi
     else
         echo "$folder exists."
-        # [OR DOWNLOAD EXISTING CERT FROM AWS BUCKET]
+        # download and install certificate from existing S3 bucket
         sudo rm -rf /etc/letsencrypt/*
         sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
         sudo tar -xzvf /backup.tar.gz --directory /
         sudo certbot -d ${domain} --reinstall --redirect
         systemctl restart nginx
+        # re-uploading the certificate in case of renewal during certbot installation
+        tar -czvf backup.tar.gz /etc/letsencrypt/*
+        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
     fi
 fi
 
@@ -111,3 +117,4 @@ fi
 touch /etc/cron.d/certbot_renew
 echo "* * * * * webapp 0 2 * * * certbot renew --no-self-upgrade
 # empty line" | tee /etc/cron.d/certbot_renew
+
