@@ -8,7 +8,6 @@ bucket="ssl-certificates-skihire2u"
 test_mode=true
 # -----------------------
 
-sed -i 's/http {/http {\n    server_names_hash_bucket_size 128;/' /etc/nginx/nginx.conf
 
 #add cron job
 function add_cron_job {
