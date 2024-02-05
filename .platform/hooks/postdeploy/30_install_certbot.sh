@@ -1,74 +1,28 @@
 #!/bin/bash
+# this must be done in postdeploy so that nginx config doesn't get overwritten by Elastic Beanstalk
 
 # ---- Configuration ----
 domain="newbooking.skihire2u.com"
 contact="contact@gearboxgo.com"
 bucket="ssl-certificates-skihire2u"
-folder=$(aws s3 ls s3://ssl-certificates-skihire2u/LetsEncrypt/)
-test_mode=false
+test_mode=true
 # -----------------------
+
+sed -i 's/http {/http {\n    server_names_hash_bucket_size 128;/' /etc/nginx/nginx.conf
+
+#add cron job
+function add_cron_job {
+    touch /etc/cron.d/certbot_renew
+    echo "* * * * * webapp 0 2 * * * certbot renew --no-self-upgrade
+    # empty line" | tee /etc/cron.d/certbot_renew
+}
 
 # Temporary immediate exit so that we don't run this until dns is set up
 #exit
 
-# this must be done in postdeploy so that nginx config doesn't get overwritten by Elastic Beanstalk
-
 #check if certbot is already installed
 if command -v certbot &>/dev/null; then
     echo "certbot already installed"
-
-    # check if the S3 bucket already exists with a certificate
-    if [ -z "$folder" ]; then
-        echo "$folder does not exist."
-        # obtain, install, and upload certificate to S3 bucket since it does not exist already
-        if [ "$test_mode" = true ]; then
-            #get a test mode cert
-            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            tar -czvf backup.tar.gz /etc/letsencrypt/*
-            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-        else
-            #get a production cert
-            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            tar -czvf backup.tar.gz /etc/letsencrypt/*
-            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-        fi
-    else
-        # download and install certificate from existing S3 bucket
-        echo "$folder exists."
-        sudo rm -rf /etc/letsencrypt/*
-        sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
-        sudo tar -xzvf /backup.tar.gz --directory /
-        sudo certbot -d ${domain} --reinstall --redirect
-        systemctl restart nginx
-        # re-uploading the certificate in case of renewal during certbot installation
-        tar -czvf backup.tar.gz /etc/letsencrypt/*
-        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-    fi
-
-    # check if the certificate is staging or production
-    # look for the word "STAGING" in the certificate info
-    # bash returns 0 if it finds a match
-    openssl x509 -in /etc/letsencrypt/live/${domain}/cert.pem -text -noout | grep -q STAGING
-    result=$?
-    if [ "$result" = 0 ]; then
-        is_staging=true
-    else
-        is_staging=false
-    fi
-
-    if [ "$test_mode" = false ] && [ "$is_staging" = true ]; then
-        # Current certificate is from staging but we need production
-        # Force install a production certificate
-        echo "Staging SSL certificate is installed, but we need production"
-        echo "Forcing SSL certificate renewal..."
-
-        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --force-renewal
-        tar -czvf backup.tar.gz /etc/letsencrypt/*
-        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-    else
-        # Certificate is installed successfully 
-        echo "Certificate is installed"
-    fi
 else
 
     # Install certbot since it's not installed already
@@ -84,37 +38,47 @@ else
     sudo amazon-linux-extras install epel -y
     sudo yum install -y certbot python2-certbot-nginx
 
-    # check if the S3 bucket already exists with a certificate
-    if [ -z "$folder" ]; then
-        echo "$folder does not exist."
-        # obtain, install, and upload certificate to S3 bucket since it does not exist already
-        if [ "$test_mode" = true ]; then
-            #get a test mode cert
-            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
-            tar -czvf backup.tar.gz /etc/letsencrypt/*
-            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-        else
-            #get a production cert
-            sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
-            tar -czvf backup.tar.gz /etc/letsencrypt/*
-            aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-        fi
-    else
-        echo "$folder exists."
-        # download and install certificate from existing S3 bucket
-        sudo rm -rf /etc/letsencrypt/*
-        sudo aws s3 cp s3://${bucket}/LetsEncrypt/backup.tar.gz /
-        sudo tar -xzvf /backup.tar.gz --directory /
-        sudo certbot -d ${domain} --reinstall --redirect
-        systemctl restart nginx
-        # re-uploading the certificate in case of renewal during certbot installation
-        tar -czvf backup.tar.gz /etc/letsencrypt/*
-        aws s3 cp /backup.tar.gz s3://${bucket}/LetsEncrypt/
-    fi
 fi
 
-#add cron job
-touch /etc/cron.d/certbot_renew
-echo "* * * * * webapp 0 2 * * * certbot renew --no-self-upgrade
-# empty line" | tee /etc/cron.d/certbot_renew
+if [ "$test_mode" = true ]; then
+    folder="s3://${bucket}/LetsEncrypt-Staging/"
+else
+    folder="s3://${bucket}/LetsEncrypt/"
+fi
 
+# check if the S3 bucket already exists with a certificate
+if [ -n "$(aws s3 ls $folder)" ]; then
+
+    # download and install certificate from existing S3 bucket
+    echo "$folder exists."
+    sudo rm -rf /etc/letsencrypt/*
+    sudo aws s3 cp ${folder}backup.tar.gz /tmp
+    sudo tar -xzvf /tmp/backup.tar.gz --directory /
+    if [ "$test_mode" = true ]; then
+        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --reinstall --redirect --test-cert --expand
+    else
+        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --reinstall --redirect --expand
+    fi
+    systemctl reload nginx
+
+    # re-uploading the certificate in case of renewal during certbot installation
+    tar -czvf /tmp/backup.tar.gz /etc/letsencrypt/*
+    aws s3 cp /tmp/backup.tar.gz ${folder}
+
+    add_cron_job
+    exit
+fi
+
+# obtain, install, and upload certificate to S3 bucket since it does not exist already
+if [ "$test_mode" = true ]; then
+    #get a test mode cert
+    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect --test-cert
+else
+    #get a production cert
+    sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --redirect
+fi
+
+tar -czvf /tmp/backup.tar.gz /etc/letsencrypt/*
+aws s3 cp /tmp/backup.tar.gz ${folder}
+
+add_cron_job
