@@ -5,7 +5,7 @@
 domain="newbooking.skihire2u.com"
 contact="contact@gearboxgo.com"
 bucket="ssl-certificates-skihire2u"
-test_mode=true
+test_mode=false
 # -----------------------
 
 
