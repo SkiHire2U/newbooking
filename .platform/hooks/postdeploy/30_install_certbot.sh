@@ -54,7 +54,7 @@ if [ -n "$(aws s3 ls $folder)" ]; then
     sudo aws s3 cp ${folder}backup.tar.gz /tmp
     sudo tar -xzvf /tmp/backup.tar.gz --directory /
     if [ "$test_mode" = true ]; then
-        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --reinstall --redirect --test-cert --expand
+        sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --reinstall --redirect --test-cert --expand --break-my-certs
     else
         sudo certbot -n -d ${domain} --nginx --agree-tos --email ${contact} --reinstall --redirect --expand
     fi
